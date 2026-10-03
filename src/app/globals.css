@@ -11,16 +11,19 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   min-height: 100vh;
+  overflow-x: clip;
   color: #28362d;
   background:
     radial-gradient(1200px 600px at 10% -10%, rgba(94, 172, 189, 0.18), transparent 55%),
     radial-gradient(900px 500px at 100% 0%, rgba(176, 137, 92, 0.16), transparent 50%),
     linear-gradient(165deg, var(--bg-from), var(--bg-to));
   font-family: "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+  line-height: 1.6;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
@@ -32,4 +35,57 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
+  }
+}
+
+@layer components {
+  .kv-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #e4ebe6;
+    list-style: none;
+  }
+
+  .kv-row:last-child {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 640px) {
+    .kv-row {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  }
+
+  .kv-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: break-word;
+    line-height: 1.6;
+  }
+
+  .kv-value {
+    flex: 0 0 auto;
+    overflow-wrap: break-word;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (min-width: 640px) {
+    .kv-value {
+      text-align: right;
+    }
+  }
 }

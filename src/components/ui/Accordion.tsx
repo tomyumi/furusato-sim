@@ -20,21 +20,29 @@ export function Accordion({
   const shown = forceOpen || open;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-ink-200 bg-white">
+    <div
+      data-pdf-block
+      className="min-w-0 overflow-visible rounded-xl border border-cedar-300 bg-[#fbf8f3]"
+    >
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium text-ink-800 transition hover:bg-ink-50"
+        data-pdf-unit
+        className="flex w-full min-w-0 items-start justify-between gap-2 px-3.5 py-3 text-left text-sm font-medium leading-6 text-cedar-950 transition hover:bg-cedar-100/60"
         aria-expanded={shown}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
       >
-        <span>{title}</span>
-        <span className={`text-ink-400 transition-transform ${shown ? "rotate-180" : ""}`} aria-hidden>
+        <span className="min-w-0 break-words">{title}</span>
+        <span
+          data-pdf-hide
+          className={`mt-1 shrink-0 text-cedar-600 transition-transform ${shown ? "rotate-180" : ""}`}
+          aria-hidden
+        >
           ▾
         </span>
       </button>
       {shown ? (
-        <div id={panelId} className="border-t border-ink-100 px-4 py-3">
+        <div id={panelId} className="min-w-0 border-t border-cedar-200 px-3.5 pb-3 pt-3">
           {children}
         </div>
       ) : null}

@@ -17,15 +17,17 @@ export function DeductionsStep({
   const patch = (partial: Partial<DeductionInput>) => onChange({ ...value, ...partial });
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="font-display text-2xl text-ink-900">控除の金額を書き写す</h2>
-        <p className="text-sm text-ink-600">
+        <h2 className="text-2xl font-semibold leading-normal text-ink-900">
+          {"控除の金額を書き写す"}
+        </h2>
+        <p className="text-sm leading-6 text-ink-600">
           空欄の項目は0円として扱います。源泉徴収票に書いてある数字だけ入力してください。
         </p>
       </header>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <NumberField
           label="社会保険料等の金額"
           badge="源泉徴収票"
@@ -46,7 +48,7 @@ export function DeductionsStep({
           </button>
         ) : null}
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <NumberField
             label="生命保険料の控除額"
             badge="源泉徴収票"

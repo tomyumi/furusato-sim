@@ -13,6 +13,9 @@ interface NumberFieldProps
   badge?: string;
 }
 
+const INPUT_CLASS =
+  "min-w-0 w-full rounded-l-xl border border-ink-200 bg-white px-3 py-2 text-right text-ink-900 shadow-sm outline-none transition placeholder:text-ink-300 focus:border-mist-500 focus:ring-2 focus:ring-mist-200";
+
 export function NumberField({
   label,
   value,
@@ -23,42 +26,50 @@ export function NumberField({
   id,
   ...rest
 }: NumberFieldProps) {
-  const fieldId = id ?? label;
+  const fieldId = id ?? `field-${label}`;
 
   return (
-    <label className="block space-y-1.5" htmlFor={fieldId}>
-      <span className="flex flex-wrap items-center gap-2">
-        <span className="text-sm font-medium text-ink-800">{label}</span>
+    <label className="block min-w-0 space-y-1" htmlFor={fieldId}>
+      <span className="flex min-w-0 flex-wrap items-center gap-2">
+        <span className="min-w-0 break-words text-sm font-medium leading-5 text-ink-800">
+          {label}
+        </span>
         {badge ? (
-          <span className="rounded-full bg-mist-100 px-2 py-0.5 text-[11px] font-medium text-mist-800">
+          <span className="shrink-0 rounded-full bg-mist-100 px-2 py-0.5 text-[11px] font-medium leading-4 text-mist-800">
             {badge}
           </span>
         ) : null}
       </span>
-      <div className="relative">
+      <span className="flex min-w-0 items-stretch">
         <input
+          {...rest}
           id={fieldId}
-          type="number"
+          name={fieldId}
+          type="text"
           inputMode="numeric"
+          autoComplete="off"
+          spellCheck={false}
           placeholder="未入力"
-          className="w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 pr-12 text-right text-ink-900 shadow-sm outline-none transition placeholder:text-ink-300 focus:border-mist-500 focus:ring-2 focus:ring-mist-200"
-          value={value === "" ? "" : value}
+          className={INPUT_CLASS}
+          value={value === "" ? "" : String(value)}
+          suppressHydrationWarning
           onChange={(e) => {
-            const raw = e.target.value;
-            if (raw === "") {
+            const raw = e.target.value.replace(/[^\d-]/g, "");
+            if (raw === "" || raw === "-") {
               onChange("");
               return;
             }
             const n = Number(raw);
             onChange(Number.isFinite(n) ? Math.trunc(n) : "");
           }}
-          {...rest}
         />
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-ink-400">
+        <span className="inline-flex shrink-0 items-center rounded-r-xl border border-l-0 border-ink-200 bg-ink-50 px-3 text-sm leading-none text-ink-500">
           {suffix}
         </span>
-      </div>
-      {hint ? <span className="block text-xs leading-relaxed text-ink-500">{hint}</span> : null}
+      </span>
+      {hint ? (
+        <span className="block text-xs leading-5 text-ink-500">{hint}</span>
+      ) : null}
     </label>
   );
 }

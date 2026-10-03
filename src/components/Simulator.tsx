@@ -27,10 +27,10 @@ export function Simulator() {
   const isFirst = step === 0;
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
+    <div className="w-full min-w-0">
       <StepNav steps={[...STEPS]} current={step} onSelect={setStep} />
 
-      <div className="rounded-3xl border border-ink-200/80 bg-white/90 p-5 shadow-soft backdrop-blur sm:p-8">
+      <div className="min-w-0 overflow-visible rounded-2xl border border-ink-200/80 bg-white/90 p-4 shadow-soft backdrop-blur sm:p-6">
         {step === 0 ? (
           <IncomeStep
             value={form.income}
@@ -59,29 +59,29 @@ export function Simulator() {
             onChange={(family) => setForm((f) => ({ ...f, family }))}
           />
         ) : null}
-        {step === 3 ? <ResultStep result={result} /> : null}
+        {step === 3 ? <ResultStep result={result} form={form} /> : null}
 
         {step < 3 && result.filingNeedsTaxReturn ? (
-          <div className="mt-6">
+          <div className="mt-4">
             <FilingAlert result={result} />
           </div>
         ) : null}
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-ink-100 pt-5">
+        <div className="mt-5 flex flex-col gap-2 border-t border-ink-100 pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <button
             type="button"
             disabled={isFirst}
             onClick={() => setStep((s) => Math.max(0, s - 1))}
-            className="rounded-full px-4 py-2 text-sm font-medium text-ink-600 transition hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full px-4 py-2.5 text-sm font-medium leading-5 text-ink-600 transition hover:bg-ink-100 disabled:cursor-not-allowed disabled:opacity-40"
           >
             戻る
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             {!isLast ? (
               <button
                 type="button"
                 onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-                className="rounded-full bg-ink-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-ink-800"
+                className="rounded-full bg-ink-900 px-5 py-2.5 text-sm font-medium leading-5 text-white transition hover:bg-ink-800"
               >
                 次へ
               </button>
@@ -89,7 +89,7 @@ export function Simulator() {
               <button
                 type="button"
                 onClick={() => setStep(0)}
-                className="rounded-full border border-ink-300 bg-white px-5 py-2.5 text-sm font-medium text-ink-800 transition hover:bg-ink-50"
+                className="rounded-full border border-ink-300 bg-white px-5 py-2.5 text-sm font-medium leading-5 text-ink-800 transition hover:bg-ink-50"
               >
                 入力を見直す
               </button>
@@ -98,7 +98,7 @@ export function Simulator() {
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="rounded-full bg-mist-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-mist-700"
+                className="rounded-full bg-mist-600 px-5 py-2.5 text-sm font-medium leading-5 text-white transition hover:bg-mist-700"
               >
                 結果を見る
               </button>

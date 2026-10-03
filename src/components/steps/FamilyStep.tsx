@@ -17,10 +17,12 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
   const fromBalance = balance > 0 && rate > 0 ? Math.trunc(balance * rate) : 0;
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="font-display text-2xl text-ink-900">家族と住宅ローン</h2>
-        <p className="text-sm text-ink-600">
+        <h2 className="text-2xl font-semibold leading-normal text-ink-900">
+          {"家族と住宅ローン"}
+        </h2>
+        <p className="text-sm leading-6 text-ink-600">
           人数や金額は空欄のままでも構いません。未入力は0として計算します。
         </p>
       </header>
@@ -37,7 +39,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
           ).map(([id, label]) => (
             <label
               key={id}
-              className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm ${
+              className={`flex min-w-0 cursor-pointer items-start gap-2 rounded-xl border px-3 py-2.5 text-sm leading-6 ${
                 value.spouseStatus === id
                   ? "border-mist-500 bg-mist-50 text-mist-900"
                   : "border-ink-200 bg-white text-ink-700"
@@ -46,10 +48,11 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
               <input
                 type="radio"
                 name="spouse"
+                className="mt-1 shrink-0"
                 checked={value.spouseStatus === id}
                 onChange={() => patch({ spouseStatus: id })}
               />
-              {label}
+              <span className="min-w-0 break-words">{label}</span>
             </label>
           ))}
         </div>
@@ -64,7 +67,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
         ) : null}
       </fieldset>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <NumberField
           label="一般の控除対象扶養親族（16歳以上）"
           value={value.dependentGeneral}
@@ -99,19 +102,19 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
         />
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-ink-200 bg-ink-50/50 p-4">
-        <label className="flex items-center gap-2 text-sm font-medium text-ink-800">
+      <div className="space-y-3 overflow-visible rounded-xl border border-ink-200 bg-ink-50/50 p-3.5">
+        <label className="flex items-start gap-3 text-sm font-medium leading-6 text-ink-800">
           <input
             type="checkbox"
             checked={value.hasHousingLoanCredit}
             onChange={(e) => patch({ hasHousingLoanCredit: e.target.checked })}
-            className="h-4 w-4 rounded border-ink-300"
+            className="mt-1 h-4 w-4 shrink-0 rounded border-ink-300"
           />
-          住宅借入金等特別控除（住宅ローン控除）あり
+          <span className="min-w-0 break-words">住宅借入金等特別控除（住宅ローン控除）あり</span>
         </label>
 
         {value.hasHousingLoanCredit ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <NumberField
               label="居住開始年"
               value={value.occupancyYear}
@@ -125,7 +128,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
             <label className="block space-y-1.5">
               <span className="text-sm font-medium text-ink-800">控除率</span>
               <select
-                className="w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-ink-900 shadow-sm outline-none focus:border-mist-500 focus:ring-2 focus:ring-mist-200"
+                className="w-full min-w-0 rounded-xl border border-ink-200 bg-white px-3 py-2.5 leading-6 text-ink-900 shadow-sm outline-none focus:border-mist-500 focus:ring-2 focus:ring-mist-200"
                 value={value.housingLoanRate === "" ? "" : String(value.housingLoanRate)}
                 onChange={(e) =>
                   patch({
