@@ -242,7 +242,6 @@ export async function downloadElementAsPdf(
       useCORS: true,
       backgroundColor: "#ffffff",
       logging: false,
-      letterRendering: false,
       foreignObjectRendering: false,
       scrollX: 0,
       scrollY: 0,
