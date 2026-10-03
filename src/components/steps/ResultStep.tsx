@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Accordion } from "@/components/ui/Accordion";
 import { FilingAlert } from "@/components/FilingAlert";
+import { SiteLinks } from "@/components/SiteLinks";
 import { InputSummary } from "@/components/steps/InputSummary";
 import { formatDeductionRatePercent } from "@/lib/calc/housingLoan";
 import { formatPercent, formatYen } from "@/lib/format";
@@ -112,6 +113,8 @@ export function ResultStep({ result, form }: ResultStepProps) {
             この金額までの寄付なら、実質負担はおよそ2,000円です。
           </p>
         </div>
+
+        <SiteLinks />
 
         {result.housingLoanPossibleAmount > 0 ? (
           <div
