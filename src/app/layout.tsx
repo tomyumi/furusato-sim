@@ -25,10 +25,14 @@ export const metadata: Metadata = {
     "ふるさと納税",
     "控除上限額",
     "シミュレーション",
+    "副業",
+    "ダブルワーク",
+    "個人事業主",
+    "青色申告",
+    "事業所得",
+    "住宅ローン控除",
     "限度額 計算",
     "ふるさと納税 いくらまで",
-    "控除上限額 シミュレーション",
-    "限度額",
   ],
   robots: INDEX_FOLLOW_ROBOTS,
   openGraph: {
@@ -59,9 +63,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   verification: {
-    google:
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() ||
-      "N-noCgUJH5_9fg03bsMDHLfn3A5OerHBn3TeB9SaaMw",
+    google: "N-noCgUJH5_9fg03bsMDHLfn3A5OerHBn3TeB9SaaMw",
   },
 };
 
@@ -72,6 +74,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" suppressHydrationWarning>
+      <head>
+        <meta name="google-site-verification" content="N-noCgUJH5_9fg03bsMDHLfn3A5OerHBn3TeB9SaaMw" />
+      </head>
       <body className="antialiased" suppressHydrationWarning>
         <JsonLd
           data={{

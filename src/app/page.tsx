@@ -52,12 +52,14 @@ export default function HomePage() {
       <div className="mb-10 min-w-0 space-y-5 sm:mb-12">
         <p className="kicker">SIMULATOR</p>
         <h1 className="font-display text-3xl font-semibold text-ink-950 sm:text-5xl sm:leading-tight">
-          ふるさと納税はいくらまで？
-          <span className="mt-2 block text-[0.92em] text-cedar-700">控除上限額シミュレーション</span>
+          副業・個人事業主・住宅ローン控除に対応
+          <span className="mt-2 block text-[0.92em] text-cedar-700">
+            ふるさと納税の控除上限額シミュレーション
+          </span>
         </h1>
         <p className="lede max-w-2xl">
-          源泉徴収票の「支払金額」や「社会保険料等の金額」を書き写すと、自己負担2,000円で済む控除上限額（限度額）の目安を計算できます。
-          会社員でも副業・事業所得がある人でも使えます。仕組みや申告の違いは、下の解説もご覧ください。
+          副業やダブルワークで本業と収入を合算する方、青色申告の事業所得がある個人事業主、住宅ローン控除で所得税から引ききれず住民税へ振り替える方など、税金計算が複雑な人向けの限度額シミュレーターです。
+          源泉徴収票の数字を書き写すだけで、自己負担2,000円で済む控除上限額の目安を、複雑な手計算なしで確認できます。
         </p>
         <ScopeNotice />
       </div>

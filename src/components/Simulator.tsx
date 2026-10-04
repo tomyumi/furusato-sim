@@ -174,7 +174,7 @@ export function Simulator() {
             控除上限額・限度額を計算する
           </h2>
           <p className="text-sm leading-7 text-ink-600">
-            年収の早見表ではなく、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
+            本業と副業の給与、青色申告の事業所得、住宅ローン控除の振替まで含めて、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
           </p>
         </div>
 
@@ -280,7 +280,7 @@ export function SimulatorPlaceholder() {
             控除上限額・限度額を計算する
           </h2>
           <p className="text-sm leading-7 text-ink-600" suppressHydrationWarning>
-            年収の早見表ではなく、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
+            本業と副業の給与、青色申告の事業所得、住宅ローン控除の振替まで含めて、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
           </p>
         </div>
         <div className="card min-h-[16rem] scroll-mt-24" suppressHydrationWarning>

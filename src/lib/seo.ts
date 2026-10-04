@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 export const SEO = {
   brand: "Furusato Lab",
   locale: "ja_JP",
-  defaultTitle: "ふるさと納税の控除上限額シミュレーション｜限度額を計算",
+  defaultTitle: "副業・個人事業主・住宅ローン控除に対応したふるさと納税シミュレーター",
   defaultDescription:
-    "ふるさと納税はいくらまで寄付できる？源泉徴収票から控除上限額をシミュレーションし、自己負担2,000円で済む限度額を無料で計算できます。",
+    "本業と副業（ダブルワーク）の給与合算、青色申告の事業所得、住宅ローン控除で所得税から引ききれない分の住民税への振替まで、複雑な手計算なしで控除上限額をシミュレーション。源泉徴収票を書き写すだけで、自己負担2,000円で済む限度額の目安が分かります。",
 } as const;
 
 export const OG_IMAGE_PATH = "/opengraph-image";

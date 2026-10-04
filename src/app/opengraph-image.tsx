@@ -35,16 +35,27 @@ export default function OpenGraphImage() {
           <div
             style={{
               display: "flex",
-              fontSize: 58,
+              fontSize: 40,
               lineHeight: 1.2,
               fontWeight: 700,
               maxWidth: 980,
             }}
           >
-            Hometown Tax Deduction Limit Simulator
+            副業・個人事業主・住宅ローン控除に対応
           </div>
-          <div style={{ display: "flex", fontSize: 26, color: "#d7dce8", lineHeight: 1.5 }}>
-            Estimate Japan furusato nozei limits from your pay slip
+          <div
+            style={{
+              display: "flex",
+              fontSize: 36,
+              lineHeight: 1.35,
+              fontWeight: 700,
+              maxWidth: 980,
+            }}
+          >
+            ふるさと納税シミュレーター
+          </div>
+          <div style={{ display: "flex", fontSize: 24, color: "#d7dce8", lineHeight: 1.5 }}>
+            本業と副業の合算・青色申告・住宅ローン控除の振替まで限度額を計算
           </div>
         </div>
       </div>

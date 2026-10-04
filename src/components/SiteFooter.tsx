@@ -14,7 +14,7 @@ export function SiteFooter() {
       <div className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8">
         <p className="kicker text-cedar-300">FURUSATO LAB</p>
         <p className="mt-3 max-w-xl text-sm leading-7 text-ink-300">
-          ふるさと納税の控除上限額をシミュレーションし、限度額を計算するための目安ツールです。税務アドバイスではありません。最新の法令と各自治体の案内を優先してください。
+          副業・個人事業主・住宅ローン控除に対応した、ふるさと納税の控除上限額シミュレーターです。本業と副業の合算、青色申告の事業所得、住宅ローン控除の住民税への振替を含めた限度額の目安を計算します。税務アドバイスではありません。最新の法令と各自治体の案内を優先してください。
         </p>
         <nav aria-label="サイト情報" className="mt-8">
           <ul className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
