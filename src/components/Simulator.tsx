@@ -9,6 +9,7 @@ import { IncomeStep } from "@/components/steps/IncomeStep";
 import { ResultStep } from "@/components/steps/ResultStep";
 import { StepNav } from "@/components/ui/StepNav";
 import { calculateFurusatoLimit } from "@/lib/calc";
+import { handleEnterToAdvanceField } from "@/lib/advanceOnEnter";
 import { withSuggestedHousingLoanRate } from "@/lib/calc/housingLoanRules";
 import { toAmount } from "@/lib/numbers";
 import {
@@ -51,6 +52,7 @@ export function Simulator() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const shouldScrollOnStep = useRef(false);
+  const stepFieldsRef = useRef<HTMLDivElement>(null);
 
   const result = useMemo(() => calculateFurusatoLimit(form), [form]);
   const estimatedSocial = Math.floor(
@@ -171,6 +173,15 @@ export function Simulator() {
       <StepNav steps={[...STEPS]} current={step} onSelect={goToStep} />
 
       <div id={FORM_TOP_ID} tabIndex={-1} className="card scroll-mt-24 outline-none">
+        <form
+          onSubmit={(event) => event.preventDefault()}
+          onKeyDown={(event) => {
+            handleEnterToAdvanceField(event, stepFieldsRef.current, () => {
+              if (step < 3) goToStep(Math.min(STEPS.length - 1, step + 1));
+            });
+          }}
+        >
+        <div ref={stepFieldsRef}>
         {step === 0 ? (
           <IncomeStep
             value={form.income}
@@ -202,6 +213,7 @@ export function Simulator() {
         {step === 3 ? (
           <ResultStep result={result} form={form} history={historyPanel} resultAnchorId={RESULT_TOP_ID} />
         ) : null}
+        </div>
 
         {step < 3 && result.filingNeedsTaxReturn ? (
           <div className="mt-8">
@@ -239,6 +251,7 @@ export function Simulator() {
             ) : null}
           </div>
         </div>
+        </form>
       </div>
       </section>
     </div>

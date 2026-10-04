@@ -51,6 +51,9 @@ export function NumberField({
           className={INPUT_CLASS}
           value={display}
           suppressHydrationWarning
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.preventDefault();
+          }}
           onChange={(e) => {
             const raw = e.target.value.replace(/[^\d-]/g, "");
             if (raw === "" || raw === "-") {

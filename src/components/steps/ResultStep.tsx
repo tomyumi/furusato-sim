@@ -7,6 +7,11 @@ import { GiftCart } from "@/components/GiftCart";
 import { InputSummary } from "@/components/steps/InputSummary";
 import { formatDeductionRatePercent } from "@/lib/calc/housingLoan";
 import { formatPercent, formatYen } from "@/lib/format";
+import {
+  buildLineShareHref,
+  buildSimulationShareText,
+  simulationSharePageUrl,
+} from "@/lib/lineShare";
 import { downloadElementAsPdf } from "@/lib/pdfDownload";
 import type { BreakdownLine, CalculationResult, SimulatorFormState } from "@/lib/types";
 
@@ -201,10 +206,48 @@ export function ResultStep({ result, form, history, resultAnchorId = "simulator-
 
       <div data-pdf-hide className="flex min-w-0 flex-col gap-3">
         {error ? <p className="text-sm font-medium text-cedar-800">{error}</p> : null}
-        <button type="button" onClick={handleDownload} disabled={busy} className="btn-primary sm:self-start">
-          {busy ? "PDFを作成中…" : "結果をPDFでダウンロード"}
-        </button>
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <button type="button" onClick={handleDownload} disabled={busy} className="btn-primary sm:self-start">
+            {busy ? "PDFを作成中…" : "結果をPDFでダウンロード"}
+          </button>
+          <LineShareButton form={form} result={result} />
+        </div>
       </div>
     </section>
+  );
+}
+
+function LineShareButton({
+  form,
+  result,
+}: {
+  form: SimulatorFormState;
+  result: CalculationResult;
+}) {
+  const pageUrl = simulationSharePageUrl();
+  const href = buildLineShareHref(buildSimulationShareText(form, result, pageUrl));
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center justify-center gap-2 rounded-md bg-[#06C755] px-5 py-2.5 text-sm font-semibold leading-5 tracking-wide text-white shadow-md transition duration-200 ease-out hover:brightness-105 sm:self-start"
+      aria-label="シミュレーション結果をLINEで送る"
+    >
+      <LineIcon />
+      LINEで送る
+    </a>
+  );
+}
+
+function LineIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M12 3C6.5 3 2 6.7 2 11.2c0 4 3.4 7.4 8 8.1V22l2.3-2.3c4.7-.2 8.7-3.7 8.7-8.5C21 6.7 17.5 3 12 3Zm-3.2 9.6H7.4V8.8h1.4v3.8Zm2.9 0H11V8.8h1.4v3.8h.3Zm4.4 0h-1.5l-1.2-1.9v1.9h-1.4V8.8h1.5l1.2 1.9V8.8h1.4v3.8Z"
+      />
+    </svg>
   );
 }
