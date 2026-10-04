@@ -65,22 +65,24 @@ export function GiftCart({ limit }: GiftCartProps) {
   }, []);
 
   useEffect(() => {
-    const node = remainStickyRef.current;
-    if (!node) return;
+    const sticky = remainStickyRef.current;
+    if (!sticky) return;
 
     function applyStickyOffset() {
+      const el = remainStickyRef.current;
+      if (!el) return;
       const stickyTop = 16;
       const gap = 16;
       const header = document.querySelector("header");
       const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
-      const stickyHeight = node.getBoundingClientRect().height;
+      const stickyHeight = el.getBoundingClientRect().height;
       const offset = Math.ceil(Math.max(headerBottom, stickyHeight + stickyTop) + gap);
       document.documentElement.style.setProperty("--gift-sticky-offset", `${offset}px`);
     }
 
     applyStickyOffset();
     const observer = new ResizeObserver(applyStickyOffset);
-    observer.observe(node);
+    observer.observe(sticky);
     window.addEventListener("resize", applyStickyOffset);
     return () => {
       observer.disconnect();
