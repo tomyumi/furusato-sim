@@ -6,6 +6,7 @@ import {
   formatInputCount,
   formatInputYear,
 } from "@/lib/format";
+import { formatHousingLoanRatePercent } from "@/lib/calc/housingLoanRules";
 import type { SimulatorFormState } from "@/lib/types";
 
 const BLUE_LABEL: Record<string, string> = {
@@ -48,9 +49,7 @@ export function InputSummary({ form }: { form: SimulatorFormState }) {
   const rateLabel =
     family.housingLoanRate === ""
       ? "未選択"
-      : family.housingLoanRate === 0.01
-        ? "1.0%"
-        : "0.7%";
+      : formatHousingLoanRatePercent(family.housingLoanRate);
 
   return (
     <div className="space-y-2">
@@ -61,22 +60,33 @@ export function InputSummary({ form }: { form: SimulatorFormState }) {
         <Row label="対象年" value={formatInputYear(form.taxYear)} />
         <Row label="居住開始年" value={formatInputYear(family.occupancyYear)} />
       </Block>
-      <Block title="源泉徴収票・所得">
-        <Row label="支払金額（本業）" value={formatInputAmount(income.primarySalaryRevenue)} />
-        <Row label="支払金額（副業・2枚目）" value={formatInputAmount(income.sideSalaryRevenue)} />
+      <Block title="給与所得（源泉徴収票）">
+        <Row
+          label="支払金額（本業の給与・源泉徴収票）"
+          value={formatInputAmount(income.primarySalaryRevenue)}
+        />
+        <Row
+          label="支払金額（副業の給与・2枚目の源泉徴収票）"
+          value={formatInputAmount(income.sideSalaryRevenue)}
+        />
+      </Block>
+      <Block title="事業所得・その他（確定申告）">
         <Row label="売上（収入金額）" value={formatInputAmount(income.businessRevenue)} />
         <Row label="必要経費" value={formatInputAmount(income.businessExpenses)} />
         <Row
           label="青色申告特別控除"
           value={BLUE_LABEL[String(income.blueSpecialDeduction)] ?? "未選択（0円として計算）"}
         />
-        <Row label="その他の所得" value={formatInputAmount(income.otherIncome)} />
+        <Row label="その他の所得（雑所得など）" value={formatInputAmount(income.otherIncome)} />
       </Block>
       <Block title="所得控除">
         <Row label="社会保険料等の金額" value={formatInputAmount(deductions.socialInsurance)} />
         <Row label="生命保険料の控除額" value={formatInputAmount(deductions.lifeInsurance)} />
         <Row label="地震保険料の控除額" value={formatInputAmount(deductions.earthquakeInsurance)} />
-        <Row label="小規模企業共済等掛金の金額" value={formatInputAmount(deductions.ideco)} />
+        <Row
+          label="小規模企業共済等掛金の金額（iDeCo含む）"
+          value={formatInputAmount(deductions.ideco)}
+        />
         <Row label="医療費控除" value={formatInputAmount(deductions.medicalExpense)} />
       </Block>
       <Block title="家族">

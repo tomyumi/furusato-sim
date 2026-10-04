@@ -1,9 +1,20 @@
 "use client";
 
 import { NumberField } from "@/components/ui/NumberField";
+import {
+  HOUSING_LOAN_OCCUPANCY_YEAR_MAX,
+  HOUSING_LOAN_OCCUPANCY_YEAR_MIN,
+  findHousingLoanEra,
+  formatEraOccupancyPhrase,
+  formatHousingLoanRatePercent,
+  housingLoanRateSelectOptions,
+  parseHousingLoanRateChoice,
+  suggestHousingLoanRate,
+  withSuggestedHousingLoanRate,
+} from "@/lib/calc/housingLoanRules";
 import { formatYen } from "@/lib/format";
 import { toAmount } from "@/lib/numbers";
-import type { FamilyInput, HousingLoanRateChoice, SpouseStatus } from "@/lib/types";
+import type { FamilyInput, SpouseStatus } from "@/lib/types";
 
 interface FamilyStepProps {
   value: FamilyInput;
@@ -107,7 +118,20 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
             type="checkbox"
             checked={value.hasHousingLoanCredit}
             suppressHydrationWarning
-            onChange={(e) => patch({ hasHousingLoanCredit: e.target.checked })}
+            onChange={(e) => {
+              const hasHousingLoanCredit = e.target.checked;
+              if (!hasHousingLoanCredit) {
+                patch({ hasHousingLoanCredit });
+                return;
+              }
+              const suggested = suggestHousingLoanRate(value.occupancyYear);
+              patch({
+                hasHousingLoanCredit,
+                ...(value.housingLoanRate === "" && suggested !== ""
+                  ? { housingLoanRate: suggested }
+                  : {}),
+              });
+            }}
             className="mt-1 h-4 w-4 shrink-0 rounded border-ink-300"
           />
           <span className="min-w-0 break-words">住宅借入金等特別控除（住宅ローン控除）あり</span>
@@ -118,36 +142,18 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
             <NumberField
               label="居住開始年"
               value={value.occupancyYear}
-              onChange={(occupancyYear) => patch({ occupancyYear })}
-              hint="住み始めた西暦。例: 2020。1ページ目の対象年と同じ欄でも構いません。"
+              onChange={(occupancyYear) => patch(withSuggestedHousingLoanRate(value, occupancyYear))}
+              hint="住み始めた西暦。入れると下の控除率を自動で選びます。例: 2020"
               suffix="年"
-              min={1990}
-              max={2100}
+              min={HOUSING_LOAN_OCCUPANCY_YEAR_MIN}
+              max={HOUSING_LOAN_OCCUPANCY_YEAR_MAX}
             />
 
-            <label className="block space-y-1.5">
-              <span className="text-sm font-medium text-ink-800">控除率</span>
-              <select
-                className="field-select"
-                value={value.housingLoanRate === "" ? "" : String(value.housingLoanRate)}
-                suppressHydrationWarning
-                onChange={(e) =>
-                  patch({
-                    housingLoanRate:
-                      e.target.value === ""
-                        ? ""
-                        : (Number(e.target.value) as HousingLoanRateChoice),
-                  })
-                }
-              >
-                <option value="">未選択</option>
-                <option value="0.01">1.0%（2021年以前に入居した方向け）</option>
-                <option value="0.007">0.7%（2022年以降に入居した方向け）</option>
-              </select>
-              <span className="block text-xs text-ink-500">
-                ご自身の入居時期に合う率を選んでください。未選択のときは年末残高からの計算はしません。
-              </span>
-            </label>
+            <HousingLoanRateField
+              occupancyYear={value.occupancyYear}
+              rate={value.housingLoanRate}
+              onChange={(housingLoanRate) => patch({ housingLoanRate })}
+            />
 
             <NumberField
               label="住宅借入金等年末残高"
@@ -179,5 +185,49 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
         ) : null}
       </div>
     </section>
+  );
+}
+
+function HousingLoanRateField({
+  occupancyYear,
+  rate,
+  onChange,
+}: {
+  occupancyYear: FamilyInput["occupancyYear"];
+  rate: FamilyInput["housingLoanRate"];
+  onChange: (next: FamilyInput["housingLoanRate"]) => void;
+}) {
+  const options = housingLoanRateSelectOptions();
+  const suggested = suggestHousingLoanRate(occupancyYear);
+  const selectedValue = rate === "" ? "" : String(rate);
+  const knownValue = options.some((o) => o.value === selectedValue) ? selectedValue : "";
+  const era = occupancyYear === "" ? undefined : findHousingLoanEra(occupancyYear);
+  const isManualOverride = suggested !== "" && rate !== "" && rate !== suggested;
+
+  let hint = "未選択のときは年末残高からの計算はしません。居住開始年を入れると自動で選びます。違う率なら手で変更できます。";
+  if (era && suggested !== "" && !isManualOverride) {
+    hint = `${occupancyYear}年入居のため ${formatHousingLoanRatePercent(suggested)}（${formatEraOccupancyPhrase(era)}）を選びました。違う率なら手で変更できます。`;
+  } else if (isManualOverride && suggested !== "") {
+    hint = `居住開始年からの目安は ${formatHousingLoanRatePercent(suggested)} です。いまは手で選んだ率を使います。`;
+  }
+
+  return (
+    <label className="block space-y-1.5">
+      <span className="text-sm font-medium text-ink-800">控除率</span>
+      <select
+        className="field-select"
+        value={knownValue}
+        suppressHydrationWarning
+        onChange={(e) => onChange(parseHousingLoanRateChoice(e.target.value))}
+      >
+        <option value="">未選択</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <span className="block text-xs leading-6 text-ink-500">{hint}</span>
+    </label>
   );
 }

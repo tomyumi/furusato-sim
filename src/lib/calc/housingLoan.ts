@@ -1,7 +1,13 @@
 /**
  * 住宅借入金等特別控除
- * 控除率・居住開始年はユーザー入力。未入力は 0 として扱う。
+ * 控除率の目安は居住開始年から era ルールで判定。ユーザーが手で上書きした率も計算に使う。
  */
+
+import {
+  currentHousingLoanEra,
+  findHousingLoanEra,
+  formatHousingLoanRatePercent,
+} from "@/lib/calc/housingLoanRules";
 
 function yen(n: number): number {
   if (!Number.isFinite(n)) return 0;
@@ -9,8 +15,7 @@ function yen(n: number): number {
 }
 
 export function formatDeductionRatePercent(rate: number): string {
-  if (!rate) return "未入力";
-  return `${(rate * 100).toFixed(1)}%`;
+  return formatHousingLoanRatePercent(rate);
 }
 
 export interface ResidentTaxHousingLoanLimit {
@@ -25,12 +30,11 @@ export function getResidentTaxHousingLoanLimit(
   taxableIncomeIncomeTax: number,
 ): ResidentTaxHousingLoanLimit {
   const taxable = yen(taxableIncomeIncomeTax);
-  const useSevenPercent = occupancyYear > 0 && occupancyYear <= 2021;
-  const percent = useSevenPercent ? 0.07 : 0.05;
-  const yenCap = useSevenPercent ? 136_500 : 97_500;
-  const note = useSevenPercent
-    ? "住民税からの控除上限は、所得税の課税総所得金額等×7%（最高136,500円）です。"
-    : "住民税からの控除上限は、所得税の課税総所得金額等×5%（最高97,500円）です。";
+  const era = findHousingLoanEra(occupancyYear) ?? currentHousingLoanEra();
+  const percent = era.residentTaxPercent;
+  const yenCap = era.residentTaxYenCap;
+  const percentLabel = Number((percent * 100).toFixed(2));
+  const note = `住民税からの控除上限は、所得税の課税総所得金額等×${percentLabel}%（最高${yenCap.toLocaleString("ja-JP")}円）です。`;
 
   return {
     percent,

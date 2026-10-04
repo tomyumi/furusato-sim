@@ -176,8 +176,8 @@ export function calculateFurusatoLimit(rawForm: SimulatorFormState): Calculation
     filingReasons: filing.reasons,
     breakdown: {
       income: [
-        { label: "支払金額（本業の源泉徴収票）", amount: primaryRev },
-        { label: "支払金額（副業の源泉徴収票）", amount: sideRev },
+        { label: "支払金額（本業の給与・源泉徴収票）", amount: primaryRev },
+        { label: "支払金額（副業の給与・2枚目の源泉徴収票）", amount: sideRev },
         { label: "支払金額の合計", amount: totalSalaryRevenue },
         { label: "給与所得控除", amount: -Math.floor(salaryDeduction) },
         { label: "給与所得控除後の金額（通算前）", amount: totalSalaryIncome },
@@ -199,7 +199,7 @@ export function calculateFurusatoLimit(rawForm: SimulatorFormState): Calculation
         if (line.label === "生命保険料控除") return { ...line, label: "生命保険料の控除額" };
         if (line.label === "地震保険料控除") return { ...line, label: "地震保険料の控除額" };
         if (line.label === "小規模企業共済等掛金控除（iDeCo等）") {
-          return { ...line, label: "小規模企業共済等掛金の金額" };
+          return { ...line, label: "小規模企業共済等掛金の金額（iDeCo含む）" };
         }
         return line;
       }),

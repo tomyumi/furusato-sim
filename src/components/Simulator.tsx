@@ -9,6 +9,7 @@ import { IncomeStep } from "@/components/steps/IncomeStep";
 import { ResultStep } from "@/components/steps/ResultStep";
 import { StepNav } from "@/components/ui/StepNav";
 import { calculateFurusatoLimit } from "@/lib/calc";
+import { withSuggestedHousingLoanRate } from "@/lib/calc/housingLoanRules";
 import { toAmount } from "@/lib/numbers";
 import {
   clearHistory,
@@ -21,7 +22,7 @@ import {
 } from "@/lib/storage";
 import { defaultFormState, type SimulatorFormState } from "@/lib/types";
 
-const STEPS = ["源泉徴収票（給与）", "控除の金額", "家族・住宅ローン", "結果"] as const;
+const STEPS = ["収入の種類", "控除の金額", "家族・住宅ローン", "結果"] as const;
 const FORM_TOP_ID = "simulator-form-top";
 const RESULT_TOP_ID = "simulator-result-limit";
 
@@ -180,7 +181,7 @@ export function Simulator() {
             onOccupancyYearChange={(occupancyYear) =>
               setForm((f) => ({
                 ...f,
-                family: { ...f.family, occupancyYear },
+                family: withSuggestedHousingLoanRate(f.family, occupancyYear),
               }))
             }
           />

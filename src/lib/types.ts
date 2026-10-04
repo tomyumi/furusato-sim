@@ -8,8 +8,8 @@ export type BlueSpecialDeduction = 0 | 100000 | 550000 | 650000;
 
 export type SpouseStatus = "none" | "deduction" | "special";
 
-/** ユーザーが手で選ぶ住宅ローン控除率 */
-export type HousingLoanRateChoice = "" | 0.01 | 0.007;
+/** ユーザーが手で選ぶ住宅ローン控除率。空は未選択。値は era ルールから増減する。 */
+export type HousingLoanRateChoice = number | "";
 
 export interface IncomeInput {
   primarySalaryRevenue: OptionalNumber;

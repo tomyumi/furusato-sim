@@ -70,11 +70,11 @@ export function DeductionsStep({
         </div>
 
         <NumberField
-          label="小規模企業共済等掛金の金額"
+          label="小規模企業共済等掛金の金額（iDeCo含む）"
           badge="源泉徴収票"
           value={value.ideco}
           onChange={(ideco) => patch({ ideco })}
-          hint="源泉徴収票の「小規模企業共済等掛金の金額」。"
+          hint="源泉徴収票の「小規模企業共済等掛金の金額」。iDeCo（個人型確定拠出年金）の年間払込額もここに入ります。票に書いていなければ、iDeCoの年間払込額を書いてください。"
           min={0}
           step={1000}
         />
