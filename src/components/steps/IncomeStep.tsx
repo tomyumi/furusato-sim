@@ -95,7 +95,7 @@ export function IncomeStep({
 
       <div className="card-gold space-y-4">
         <div className="space-y-1">
-          <h3 className="font-display text-lg text-cedar-950">事業所得（確定申告・給与以外）</h3>
+          <h3 className="font-display text-lg text-cedar-950">事業所得</h3>
           <p className="text-sm leading-7 text-cedar-900">
             源泉徴収票の支払金額とは別枠です。個人事業・フリーランスなど、確定申告する事業の売上と経費がある人だけ書いてください。給与だけの人は空欄のままです。
           </p>
@@ -103,7 +103,6 @@ export function IncomeStep({
         <div className="grid gap-5 sm:grid-cols-2">
           <NumberField
             label="売上（収入金額）"
-            badge="確定申告"
             value={value.businessRevenue}
             onChange={(businessRevenue) => patch({ businessRevenue })}
             hint="確定申告書の事業収入。源泉徴収票の支払金額はここには入れません。"
@@ -112,7 +111,6 @@ export function IncomeStep({
           />
           <NumberField
             label="必要経費"
-            badge="確定申告"
             value={value.businessExpenses}
             onChange={(businessExpenses) => patch({ businessExpenses })}
             hint="事業にかかった経費。給与所得の控除ではありません。"
@@ -146,7 +144,7 @@ export function IncomeStep({
 
       <div className="rounded-xl border border-ink-100 bg-white p-5 space-y-4">
         <div className="space-y-1">
-          <h3 className="font-display text-lg text-ink-950">その他の所得（雑所得など・確定申告）</h3>
+          <h3 className="font-display text-lg text-ink-950">その他の所得</h3>
           <p className="text-sm leading-7 text-ink-600">
             源泉徴収票の給与とも、上の事業所得とも別です。原稿料・講演料・ネット販売など、確定申告する雑所得がある人だけ書いてください。
           </p>
