@@ -127,7 +127,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
               const suggested = suggestHousingLoanRate(value.occupancyYear);
               patch({
                 hasHousingLoanCredit,
-                ...(value.housingLoanRate === "" && suggested !== ""
+                ...(value.housingLoanRate === "" && suggested != null
                   ? { housingLoanRate: suggested }
                   : {}),
               });
@@ -202,12 +202,13 @@ function HousingLoanRateField({
   const selectedValue = rate === "" ? "" : String(rate);
   const knownValue = options.some((o) => o.value === selectedValue) ? selectedValue : "";
   const era = occupancyYear === "" ? undefined : findHousingLoanEra(occupancyYear);
-  const isManualOverride = suggested !== "" && rate !== "" && rate !== suggested;
+  const hasSuggestedRate = suggested != null;
+  const isManualOverride = hasSuggestedRate && rate !== "" && rate !== suggested;
 
   let hint = "未選択のときは年末残高からの計算はしません。居住開始年を入れると自動で選びます。違う率なら手で変更できます。";
-  if (era && suggested !== "" && !isManualOverride) {
+  if (era && hasSuggestedRate && !isManualOverride) {
     hint = `${occupancyYear}年入居のため ${formatHousingLoanRatePercent(suggested)}（${formatEraOccupancyPhrase(era)}）を選びました。違う率なら手で変更できます。`;
-  } else if (isManualOverride && suggested !== "") {
+  } else if (isManualOverride) {
     hint = `居住開始年からの目安は ${formatHousingLoanRatePercent(suggested)} です。いまは手で選んだ率を使います。`;
   }
 

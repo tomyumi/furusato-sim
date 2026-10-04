@@ -68,17 +68,17 @@ export function currentHousingLoanEra(): HousingLoanCreditEra {
   return HOUSING_LOAN_CREDIT_ERAS[HOUSING_LOAN_CREDIT_ERAS.length - 1];
 }
 
-export function suggestHousingLoanRate(occupancyYear: OptionalNumber): number | "" {
-  if (occupancyYear === "") return "";
+export function suggestHousingLoanRate(occupancyYear: OptionalNumber): number | null {
+  if (occupancyYear === "") return null;
   const year = Math.trunc(occupancyYear);
   if (
     year < HOUSING_LOAN_OCCUPANCY_YEAR_MIN ||
     year > HOUSING_LOAN_OCCUPANCY_YEAR_MAX
   ) {
-    return "";
+    return null;
   }
   const era = findHousingLoanEra(year);
-  return era ? era.incomeTaxRate : "";
+  return era ? era.incomeTaxRate : null;
 }
 
 export interface HousingLoanRateOption {
@@ -114,7 +114,7 @@ export function withSuggestedHousingLoanRate<
   T extends { occupancyYear: OptionalNumber; housingLoanRate: number | "" },
 >(family: T, occupancyYear: OptionalNumber): T {
   const suggested = suggestHousingLoanRate(occupancyYear);
-  if (suggested === "") {
+  if (suggested == null) {
     return { ...family, occupancyYear };
   }
   return { ...family, occupancyYear, housingLoanRate: suggested };
