@@ -9,12 +9,19 @@ export type PortalId = (typeof PORTAL_IDS)[number];
 const DEFAULT_AFFILIATE_RAKUTEN =
   "https://rpx.a8.net/svt/ejp?a8mat=4BE7SW+G82982+2HOM+BW8O1&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26100366468_4BE7SW_G82982_2HOM_BW8O1%3Fpc%3Dhttps%253A%252F%252Fevent.rakuten.co.jp%252Ffurusato%252F%26m%3Dhttps%253A%252F%252Fevent.rakuten.co.jp%252Ffurusato%252F";
 
-const AFFILIATE_TEMPLATES: Record<PortalId, string> = {
-  rakuten: process.env.NEXT_PUBLIC_AFFILIATE_RAKUTEN || DEFAULT_AFFILIATE_RAKUTEN,
-  satofull: process.env.NEXT_PUBLIC_AFFILIATE_SATOFULL ?? "",
-  choice: process.env.NEXT_PUBLIC_AFFILIATE_CHOICE ?? "",
-  furanavi: process.env.NEXT_PUBLIC_AFFILIATE_FURANAVI ?? "",
-};
+function affiliateTemplate(portalId: PortalId): string {
+  const fromEnv =
+    portalId === "rakuten"
+      ? process.env.NEXT_PUBLIC_AFFILIATE_RAKUTEN
+      : portalId === "satofull"
+        ? process.env.NEXT_PUBLIC_AFFILIATE_SATOFULL
+        : portalId === "choice"
+          ? process.env.NEXT_PUBLIC_AFFILIATE_CHOICE
+          : process.env.NEXT_PUBLIC_AFFILIATE_FURANAVI;
+  const trimmed = fromEnv?.trim() ?? "";
+  if (trimmed) return trimmed;
+  return portalId === "rakuten" ? DEFAULT_AFFILIATE_RAKUTEN : "";
+}
 
 const ALLOWED_DESTINATION_HOSTS = new Set([
   "search.rakuten.co.jp",
@@ -138,7 +145,7 @@ export function wrapAffiliateUrl(
 ): string {
   if (!isAllowedDestination(destination)) return destination;
 
-  const template = AFFILIATE_TEMPLATES[portalId].trim();
+  const template = affiliateTemplate(portalId);
   if (!template || !isSafeAffiliateTemplate(template)) return destination;
 
   const filled = fillPlaceholders(template, destination, parts);
@@ -162,7 +169,7 @@ function a8ImpressionSrc(template: string): string | null {
 export function affiliateImpressionPixels(): string[] {
   const seen = new Set<string>();
   for (const id of PORTAL_IDS) {
-    const src = a8ImpressionSrc(AFFILIATE_TEMPLATES[id]);
+    const src = a8ImpressionSrc(affiliateTemplate(id));
     if (src) seen.add(src);
   }
   return [...seen];

@@ -1,6 +1,6 @@
 "use client";
 
-import { affiliateImpressionPixels } from "@/lib/affiliates";
+import { affiliateImpressionPixels, wrapAffiliateUrl } from "@/lib/affiliates";
 import { buildPortalLinks } from "@/lib/giftCatalog";
 
 interface SiteLinksProps {
@@ -28,28 +28,31 @@ export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLink
       </p>
       <p className="mt-1 break-words text-xs leading-6 text-ink-500">検索キーワード例: {sample}</p>
       <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {sites.map((site) => (
-          <li key={site.name} className="min-w-0">
-            <a
-              href={site.href}
-              target="_blank"
-              rel="noopener noreferrer sponsored nofollow"
-              className="btn-portal"
-              suppressHydrationWarning
-            >
-              <span className="absolute inset-y-0 left-0 w-1 bg-cedar-400" aria-hidden />
-              <span className="pl-2">
-                <span className="block text-sm font-semibold text-ink-950">{site.name}で探す</span>
-                <span className="mt-0.5 block text-xs font-medium text-ink-500">
-                  {site.query}（外部サイト）
+        {sites.map((site) => {
+          const href = wrapAffiliateUrl(site.id, site.searchUrl, site.searchParts);
+          return (
+            <li key={site.id} className="min-w-0">
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer sponsored nofollow"
+                className="btn-portal"
+                suppressHydrationWarning
+              >
+                <span className="absolute inset-y-0 left-0 w-1 bg-cedar-400" aria-hidden />
+                <span className="pl-2">
+                  <span className="block text-sm font-semibold text-ink-950">{site.name}で探す</span>
+                  <span className="mt-0.5 block text-xs font-medium text-ink-500">
+                    {site.query}（外部サイト）
+                  </span>
                 </span>
-              </span>
-              <span className="shrink-0 text-sm font-semibold text-cedar-700" aria-hidden>
-                →
-              </span>
-            </a>
-          </li>
-        ))}
+                <span className="shrink-0 text-sm font-semibold text-cedar-700" aria-hidden>
+                  →
+                </span>
+              </a>
+            </li>
+          );
+        })}
       </ul>
       {pixels.map((src) => (
         <img

@@ -1,4 +1,4 @@
-import { wrapAffiliateUrl } from "@/lib/affiliates";
+import type { AffiliateSearchParts, PortalId } from "@/lib/affiliates";
 
 export const GIFT_AMOUNTS = [1000, 3000, 5000, 10000, 15000, 20000, 30000, 50000] as const;
 
@@ -353,9 +353,12 @@ function amountRange(amount: number) {
 }
 
 export interface PortalLink {
+  id: PortalId;
   name: string;
-  href: string;
+  /** ポータル公式の検索結果URL（アフィリエイト未加工） */
+  searchUrl: string;
   query: string;
+  searchParts: AffiliateSearchParts;
 }
 
 export function buildPortalLinks(keyword?: string, amount?: number): PortalLink[] {
@@ -364,7 +367,7 @@ export function buildPortalLinks(keyword?: string, amount?: number): PortalLink[
   const encoded = encodeURIComponent(query);
   const rakutenQ = encodeURIComponent(`ふるさと納税 ${query}`);
   const range = amount && amount > 0 ? amountRange(amount) : undefined;
-  const searchParts = { query, amount, min: range?.min, max: range?.max };
+  const searchParts: AffiliateSearchParts = { query, amount, min: range?.min, max: range?.max };
 
   const rakuten = range
     ? `https://search.rakuten.co.jp/search/mall/${rakutenQ}/?min=${range.min}&max=${range.max}`
@@ -383,15 +386,11 @@ export function buildPortalLinks(keyword?: string, amount?: number): PortalLink[
     : `https://furunavi.jp/Product/Search?keyword=${encoded}`;
 
   return [
-    { id: "rakuten" as const, name: "楽天ふるさと納税", href: rakuten, query: `ふるさと納税 ${query}` },
-    { id: "satofull" as const, name: "さとふる", href: satofull, query },
-    { id: "choice" as const, name: "ふるさとチョイス", href: choice, query },
-    { id: "furanavi" as const, name: "ふるなび", href: furanavi, query },
-  ].map((site) => ({
-    name: site.name,
-    query: site.query,
-    href: wrapAffiliateUrl(site.id, site.href, searchParts),
-  }));
+    { id: "rakuten", name: "楽天ふるさと納税", searchUrl: rakuten, query: `ふるさと納税 ${query}`, searchParts },
+    { id: "satofull", name: "さとふる", searchUrl: satofull, query, searchParts },
+    { id: "choice", name: "ふるさとチョイス", searchUrl: choice, query, searchParts },
+    { id: "furanavi", name: "ふるなび", searchUrl: furanavi, query, searchParts },
+  ];
 }
 
 export function isValidCartItem(item: GiftCartItem): boolean {
