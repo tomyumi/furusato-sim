@@ -1,5 +1,6 @@
 "use client";
 
+import { affiliateImpressionPixels } from "@/lib/affiliates";
 import { buildPortalLinks } from "@/lib/giftCatalog";
 
 interface SiteLinksProps {
@@ -12,11 +13,12 @@ interface SiteLinksProps {
 export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLinksProps) {
   const sites = buildPortalLinks(keyword, amount);
   const sample = sites[0]?.query ?? keyword;
+  const pixels = affiliateImpressionPixels();
 
   return (
     <nav
       data-pdf-hide
-      className={`min-w-0 rounded-xl border border-cedar-200 bg-[#fbf8f3] p-5 sm:p-6 ${appear ? "gift-pinpoint" : ""}`}
+      className={`relative min-w-0 rounded-xl border border-cedar-200 bg-[#fbf8f3] p-5 sm:p-6 ${appear ? "gift-pinpoint" : ""}`}
       aria-label={heading}
     >
       <p className="kicker">PORTALS</p>
@@ -33,12 +35,13 @@ export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLink
               target="_blank"
               rel="noopener noreferrer sponsored nofollow"
               className="btn-portal"
+              suppressHydrationWarning
             >
               <span className="absolute inset-y-0 left-0 w-1 bg-cedar-400" aria-hidden />
               <span className="pl-2">
                 <span className="block text-sm font-semibold text-ink-950">{site.name}で探す</span>
                 <span className="mt-0.5 block text-xs font-medium text-ink-500">
-                  {sample}（外部サイト）
+                  {site.query}（外部サイト）
                 </span>
               </span>
               <span className="shrink-0 text-sm font-semibold text-cedar-700" aria-hidden>
@@ -48,6 +51,18 @@ export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLink
           </li>
         ))}
       </ul>
+      {pixels.map((src) => (
+        <img
+          key={src}
+          src={src}
+          width={1}
+          height={1}
+          alt=""
+          decoding="async"
+          className="pointer-events-none absolute h-px w-px opacity-0"
+          suppressHydrationWarning
+        />
+      ))}
     </nav>
   );
 }

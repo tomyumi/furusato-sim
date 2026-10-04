@@ -48,6 +48,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
                 name="spouse"
                 className="mt-1 shrink-0"
                 checked={value.spouseStatus === id}
+                suppressHydrationWarning
                 onChange={() => patch({ spouseStatus: id })}
               />
               <span className="min-w-0 break-words">{label}</span>
@@ -105,6 +106,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
           <input
             type="checkbox"
             checked={value.hasHousingLoanCredit}
+            suppressHydrationWarning
             onChange={(e) => patch({ hasHousingLoanCredit: e.target.checked })}
             className="mt-1 h-4 w-4 shrink-0 rounded border-ink-300"
           />
@@ -128,6 +130,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
               <select
                 className="field-select"
                 value={value.housingLoanRate === "" ? "" : String(value.housingLoanRate)}
+                suppressHydrationWarning
                 onChange={(e) =>
                   patch({
                     housingLoanRate:

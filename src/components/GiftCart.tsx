@@ -536,6 +536,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           <input
             type="text"
             value={wishName}
+            suppressHydrationWarning
             onChange={(event) => setWishName(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {

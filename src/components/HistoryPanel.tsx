@@ -70,6 +70,7 @@ export function HistoryPanel({
                       type="checkbox"
                       className="mt-1 shrink-0"
                       checked={checked}
+                      suppressHydrationWarning
                       onChange={() => onToggleSelect(entry.id)}
                     />
                     <span className="min-w-0">

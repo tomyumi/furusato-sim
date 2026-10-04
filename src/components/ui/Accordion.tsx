@@ -27,6 +27,7 @@ export function Accordion({
         className="flex w-full min-w-0 items-start justify-between gap-3 px-5 py-4 text-left text-sm font-semibold leading-6 text-ink-950 transition hover:bg-cedar-100/50"
         aria-expanded={shown}
         aria-controls={panelId}
+        suppressHydrationWarning
         onClick={() => setOpen((v) => !v)}
       >
         <span className="min-w-0 break-words">{title}</span>

@@ -71,6 +71,7 @@ function ChoiceRow({
                 name={name}
                 className="mt-1 shrink-0"
                 checked={selected}
+                suppressHydrationWarning
                 onChange={() => onChange(option.value)}
               />
               <span>{option.label}</span>

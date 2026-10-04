@@ -9,9 +9,9 @@ export function ClientShell({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <div className="min-h-screen flex-1" suppressHydrationWarning />;
-  }
-
-  return <div className="flex-1">{children}</div>;
+  return (
+    <div className="flex min-h-0 flex-1 flex-col" suppressHydrationWarning>
+      {mounted ? children : null}
+    </div>
+  );
 }

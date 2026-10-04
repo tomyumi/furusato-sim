@@ -228,13 +228,14 @@ export function saveFilingAdvisorAnswers(answers: FilingAdvisorAnswers) {
 
 export function formatSavedAt(ts: number): string {
   try {
-    return new Date(ts).toLocaleString("ja-JP", {
+    return new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
       year: "numeric",
       month: "numeric",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
+    }).format(new Date(ts));
   } catch {
     return "";
   }

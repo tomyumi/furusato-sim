@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { NumberField } from "@/components/ui/NumberField";
 import type { BlueSpecialDeduction, IncomeInput, OptionalNumber } from "@/lib/types";
 
@@ -30,10 +29,6 @@ export function IncomeStep({
   onOccupancyYearChange,
 }: IncomeStepProps) {
   const patch = (partial: Partial<IncomeInput>) => onChange({ ...value, ...partial });
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <section className="space-y-6">
@@ -112,7 +107,6 @@ export function IncomeStep({
             className="field-select"
             value={value.blueSpecialDeduction === "" ? "" : String(value.blueSpecialDeduction)}
             suppressHydrationWarning
-            disabled={!mounted}
             onChange={(e) =>
               patch({
                 blueSpecialDeduction:

@@ -55,6 +55,7 @@ export function ContactForm() {
           name="name"
           autoComplete="nickname"
           value={name}
+          suppressHydrationWarning
           onChange={(e) => setName(e.target.value)}
           className={fieldClass}
         />
@@ -69,6 +70,7 @@ export function ContactForm() {
           type="email"
           autoComplete="email"
           value={email}
+          suppressHydrationWarning
           onChange={(e) => setEmail(e.target.value)}
           className={fieldClass}
         />
@@ -82,6 +84,7 @@ export function ContactForm() {
           name="message"
           rows={6}
           value={message}
+          suppressHydrationWarning
           onChange={(e) => setMessage(e.target.value)}
           className={`${fieldClass} resize-y`}
         />

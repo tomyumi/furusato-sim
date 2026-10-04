@@ -1,3 +1,5 @@
+import { wrapAffiliateUrl } from "@/lib/affiliates";
+
 export const GIFT_AMOUNTS = [1000, 3000, 5000, 10000, 15000, 20000, 30000, 50000] as const;
 
 export interface GiftLeaf {
@@ -361,7 +363,8 @@ export function buildPortalLinks(keyword?: string, amount?: number): PortalLink[
   const query = amount && amount > 0 ? `${base} ${amount}円` : base;
   const encoded = encodeURIComponent(query);
   const rakutenQ = encodeURIComponent(`ふるさと納税 ${query}`);
-  const range = amount && amount > 0 ? amountRange(amount) : null;
+  const range = amount && amount > 0 ? amountRange(amount) : undefined;
+  const searchParts = { query, amount, min: range?.min, max: range?.max };
 
   const rakuten = range
     ? `https://search.rakuten.co.jp/search/mall/${rakutenQ}/?min=${range.min}&max=${range.max}`
@@ -380,11 +383,15 @@ export function buildPortalLinks(keyword?: string, amount?: number): PortalLink[
     : `https://furunavi.jp/Product/Search?keyword=${encoded}`;
 
   return [
-    { name: "楽天ふるさと納税", href: rakuten, query: `ふるさと納税 ${query}` },
-    { name: "さとふる", href: satofull, query },
-    { name: "ふるさとチョイス", href: choice, query },
-    { name: "ふるなび", href: furanavi, query },
-  ];
+    { id: "rakuten" as const, name: "楽天ふるさと納税", href: rakuten, query: `ふるさと納税 ${query}` },
+    { id: "satofull" as const, name: "さとふる", href: satofull, query },
+    { id: "choice" as const, name: "ふるさとチョイス", href: choice, query },
+    { id: "furanavi" as const, name: "ふるなび", href: furanavi, query },
+  ].map((site) => ({
+    name: site.name,
+    query: site.query,
+    href: wrapAffiliateUrl(site.id, site.href, searchParts),
+  }));
 }
 
 export function isValidCartItem(item: GiftCartItem): boolean {
