@@ -57,7 +57,9 @@ export function GiftCart({ limit }: GiftCartProps) {
   const [pickerAmount, setPickerAmount] = useState<number | undefined>(undefined);
   const [pickerStep, setPickerStep] = useState<PickerStep>(1);
   const [leafTouched, setLeafTouched] = useState(false);
-  const remainStickyRef = useRef<HTMLDivElement>(null);
+  const remainCardRef = useRef<HTMLDivElement>(null);
+  const compactBarRef = useRef<HTMLDivElement>(null);
+  const [compactBar, setCompactBar] = useState(false);
 
   useEffect(() => {
     setItems(loadGiftCart());
@@ -65,31 +67,38 @@ export function GiftCart({ limit }: GiftCartProps) {
   }, []);
 
   useEffect(() => {
-    const sticky = remainStickyRef.current;
-    if (!sticky) return;
+    const card = remainCardRef.current;
+    if (!card) return;
 
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setCompactBar(!entry.isIntersecting);
+      },
+      { root: null, threshold: 0, rootMargin: "-8px 0px 0px 0px" },
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     function applyStickyOffset() {
-      const el = remainStickyRef.current;
-      if (!el) return;
-      const stickyTop = 16;
-      const gap = 16;
-      const header = document.querySelector("header");
-      const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
-      const stickyHeight = el.getBoundingClientRect().height;
-      const offset = Math.ceil(Math.max(headerBottom, stickyHeight + stickyTop) + gap);
+      const bar = compactBarRef.current;
+      const barHeight = compactBar && bar ? bar.getBoundingClientRect().height : 0;
+      const offset = Math.ceil(barHeight + 16);
       document.documentElement.style.setProperty("--gift-sticky-offset", `${offset}px`);
     }
 
     applyStickyOffset();
-    const observer = new ResizeObserver(applyStickyOffset);
-    observer.observe(sticky);
+    const bar = compactBarRef.current;
+    const observer = bar ? new ResizeObserver(applyStickyOffset) : null;
+    if (bar && observer) observer.observe(bar);
     window.addEventListener("resize", applyStickyOffset);
     return () => {
-      observer.disconnect();
+      observer?.disconnect();
       window.removeEventListener("resize", applyStickyOffset);
       document.documentElement.style.removeProperty("--gift-sticky-offset");
     };
-  }, []);
+  }, [compactBar]);
 
   function persist(next: GiftCartItem[]) {
     setItems(next);
@@ -143,8 +152,12 @@ export function GiftCart({ limit }: GiftCartProps) {
     const raw = getComputedStyle(document.documentElement).getPropertyValue("--gift-sticky-offset");
     const parsed = Number.parseFloat(raw);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
-    const sticky = remainStickyRef.current?.getBoundingClientRect();
+    const sticky = compactBarRef.current?.getBoundingClientRect();
     return (sticky?.height ?? 220) + 32;
+  }
+
+  function scrollToRemainCard() {
+    remainCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function scrollToStep(n: PickerStep) {
@@ -287,48 +300,86 @@ export function GiftCart({ limit }: GiftCartProps) {
         </p>
       </div>
 
-      <div ref={remainStickyRef} className="sticky top-4 z-20">
-        <div className="gift-remain px-4 py-4 shadow-lg sm:px-6 sm:py-5">
-          <div className="grid grid-cols-3 gap-2 sm:gap-5">
-            <div className="min-w-0">
-              <p className="text-[10px] tracking-wide text-ink-300 sm:text-xs">控除上限（総枠）</p>
-              <p className="amount-figure mt-1 text-sm text-white sm:text-2xl">{formatYen(cap)}</p>
-            </div>
-            <div className="min-w-0">
-              <p className="text-[10px] tracking-wide text-ink-300 sm:text-xs">カート合計</p>
-              <p className="amount-figure mt-1 text-sm text-white sm:text-2xl">{formatYen(used)}</p>
-            </div>
-            <div className="min-w-0 rounded-lg bg-white/10 px-2 py-2 sm:px-4 sm:py-3">
-              <p className="text-[10px] font-semibold tracking-wide text-cedar-200 sm:text-xs">
-                {over ? "超過額" : "いま使える残りの枠"}
-              </p>
-              <p className="amount-figure gift-remain-accent mt-1 text-lg sm:text-4xl">
-                {formatYen(Math.abs(remaining))}
-              </p>
-            </div>
+      <div ref={remainCardRef} className="gift-remain px-4 py-4 shadow-lg sm:px-6 sm:py-5">
+        <div className="grid grid-cols-3 gap-2 sm:gap-5">
+          <div className="min-w-0">
+            <p className="text-[10px] tracking-wide text-ink-300 sm:text-xs">控除上限（総枠）</p>
+            <p className="amount-figure mt-1 text-sm text-white sm:text-2xl">{formatYen(cap)}</p>
           </div>
+          <div className="min-w-0">
+            <p className="text-[10px] tracking-wide text-ink-300 sm:text-xs">カート合計</p>
+            <p className="amount-figure mt-1 text-sm text-white sm:text-2xl">{formatYen(used)}</p>
+          </div>
+          <div className="min-w-0 rounded-lg bg-white/10 px-2 py-2 sm:px-4 sm:py-3">
+            <p className="text-[10px] font-semibold tracking-wide text-cedar-200 sm:text-xs">
+              {over ? "超過額" : "いま使える残りの枠"}
+            </p>
+            <p className="amount-figure gift-remain-accent mt-1 text-lg sm:text-4xl">
+              {formatYen(Math.abs(remaining))}
+            </p>
+          </div>
+        </div>
+        <div
+          className="mt-3 h-2 overflow-hidden rounded-sm bg-ink-800 sm:mt-5 sm:h-2.5"
+          role="meter"
+          aria-label="控除上限に対するカート合計"
+          aria-valuemin={0}
+          aria-valuemax={cap || 1}
+          aria-valuenow={used}
+        >
           <div
-            className="mt-3 h-2 overflow-hidden rounded-sm bg-ink-800 sm:mt-5 sm:h-2.5"
-            role="meter"
-            aria-label="控除上限に対するカート合計"
-            aria-valuemin={0}
-            aria-valuemax={cap || 1}
-            aria-valuenow={used}
-          >
-            <div
-              className={`h-full rounded-sm transition-all ${over ? "bg-cedar-400" : "bg-cedar-300"}`}
-              style={{ width: barWidth }}
-            />
-          </div>
-          <p className="mt-3 text-sm font-semibold leading-6 text-white sm:mt-4 sm:text-base sm:leading-7">
-            {remainingHeadline}
+            className={`h-full rounded-sm transition-all ${over ? "bg-cedar-400" : "bg-cedar-300"}`}
+            style={{ width: barWidth }}
+          />
+        </div>
+        <p className="mt-3 text-sm font-semibold leading-6 text-white sm:mt-4 sm:text-base sm:leading-7">
+          {remainingHeadline}
+        </p>
+        {remainingNote ? (
+          <p className="mt-1 hidden text-sm leading-6 text-ink-300 sm:block">{remainingNote}</p>
+        ) : null}
+        <p className="mt-2 hidden text-sm font-medium leading-7 text-cedar-200 sm:block">
+          この残りの枠から、下の3ステップで返礼品条件を選ぶ → 各サイトの検索ボタンが現れます。
+        </p>
+      </div>
+
+      <div
+        ref={compactBarRef}
+        data-pdf-hide
+        aria-hidden={!compactBar}
+        className={`fixed inset-x-0 top-0 z-50 border-b border-white/10 shadow-lg transition-transform duration-300 ease-out ${
+          compactBar ? "translate-y-0" : "pointer-events-none -translate-y-full"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={scrollToRemainCard}
+          tabIndex={compactBar ? 0 : -1}
+          className="gift-remain-bar flex w-full min-w-0 items-center gap-3 px-4 py-2.5 text-left sm:px-8"
+          aria-label="残りの枠の詳細に戻る"
+        >
+          <p className="min-w-0 flex-1 truncate">
+            <span className="text-[11px] font-semibold tracking-wide text-cedar-200">
+              {over ? "超過額：" : "いま使える残りの枠："}
+            </span>
+            <span className="amount-figure gift-remain-accent ml-1.5 text-base leading-none sm:ml-2 sm:text-xl">
+              {formatYen(Math.abs(remaining))}
+            </span>
           </p>
-          {remainingNote ? (
-            <p className="mt-1 hidden text-sm leading-6 text-ink-300 sm:block">{remainingNote}</p>
-          ) : null}
-          <p className="mt-2 hidden text-sm font-medium leading-7 text-cedar-200 sm:block">
-            この残りの枠から、下の3ステップで返礼品条件を選ぶ → 各サイトの検索ボタンが現れます。
+          <p className="shrink-0 text-[10px] leading-4 text-ink-300 sm:text-[11px] sm:leading-5">
+            控除上限額{" "}
+            <span className="tabular-nums font-semibold text-white">{formatYen(cap)}</span>
           </p>
+          <p className="shrink-0 text-[10px] leading-4 text-ink-300 sm:text-[11px] sm:leading-5">
+            カート合計{" "}
+            <span className="tabular-nums font-semibold text-white">{formatYen(used)}</span>
+          </p>
+        </button>
+        <div className="h-0.5 bg-ink-950" aria-hidden>
+          <div
+            className={`h-full ${over ? "bg-cedar-400" : "bg-cedar-300"}`}
+            style={{ width: barWidth }}
+          />
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FilingAlert } from "@/components/FilingAlert";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { DeductionsStep } from "@/components/steps/DeductionsStep";
@@ -22,6 +22,26 @@ import {
 import { defaultFormState, type SimulatorFormState } from "@/lib/types";
 
 const STEPS = ["源泉徴収票（給与）", "控除の金額", "家族・住宅ローン", "結果"] as const;
+const FORM_TOP_ID = "simulator-form-top";
+const RESULT_TOP_ID = "simulator-result-limit";
+
+function headerOffset() {
+  const header = document.querySelector("header");
+  if (!header) return 16;
+  const position = window.getComputedStyle(header).position;
+  if (position !== "sticky" && position !== "fixed") return 16;
+  return Math.ceil(header.getBoundingClientRect().height + 16);
+}
+
+function scrollToSection(id: string) {
+  const node = document.getElementById(id);
+  if (!node) return false;
+  const top = window.scrollY + node.getBoundingClientRect().top - headerOffset();
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  if (!node.hasAttribute("tabindex")) node.setAttribute("tabindex", "-1");
+  node.focus({ preventScroll: true });
+  return true;
+}
 
 export function Simulator() {
   const [step, setStep] = useState(0);
@@ -29,6 +49,7 @@ export function Simulator() {
   const [ready, setReady] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const shouldScrollOnStep = useRef(false);
 
   const result = useMemo(() => calculateFurusatoLimit(form), [form]);
   const estimatedSocial = Math.floor(
@@ -53,6 +74,31 @@ export function Simulator() {
     saveDraft(form);
   }, [form, ready]);
 
+  useEffect(() => {
+    if (!shouldScrollOnStep.current) return;
+    shouldScrollOnStep.current = false;
+    const targetId = step === 3 ? RESULT_TOP_ID : FORM_TOP_ID;
+    let cancelled = false;
+    let attempts = 0;
+
+    function tryScroll() {
+      if (cancelled) return;
+      if (scrollToSection(targetId) || attempts >= 12) return;
+      attempts += 1;
+      window.requestAnimationFrame(tryScroll);
+    }
+
+    window.requestAnimationFrame(tryScroll);
+    return () => {
+      cancelled = true;
+    };
+  }, [step]);
+
+  function moveToStep(next: number) {
+    shouldScrollOnStep.current = true;
+    setStep(next);
+  }
+
   function openResult() {
     const items = recordHistory(form, result);
     setHistory(items);
@@ -61,7 +107,7 @@ export function Simulator() {
       if (keep.length > 0) return keep;
       return items.slice(0, 1).map((item) => item.id);
     });
-    setStep(3);
+    moveToStep(3);
   }
 
   function goToStep(index: number) {
@@ -69,12 +115,12 @@ export function Simulator() {
       openResult();
       return;
     }
-    setStep(index);
+    moveToStep(index);
   }
 
   function restoreEntry(entry: HistoryEntry) {
     setForm(entry.form);
-    setStep(0);
+    moveToStep(0);
   }
 
   function toggleSelect(id: string) {
@@ -109,7 +155,7 @@ export function Simulator() {
 
   return (
     <div className="w-full min-w-0 space-y-8">
-      {historyPanel}
+      {step < 3 ? historyPanel : null}
 
       <section id="simulator" className="min-w-0 scroll-mt-24 space-y-4" aria-labelledby="limit-sim-heading">
         <div className="min-w-0 space-y-2">
@@ -123,7 +169,7 @@ export function Simulator() {
 
       <StepNav steps={[...STEPS]} current={step} onSelect={goToStep} />
 
-      <div className="card">
+      <div id={FORM_TOP_ID} tabIndex={-1} className="card scroll-mt-24 outline-none">
         {step === 0 ? (
           <IncomeStep
             value={form.income}
@@ -152,9 +198,9 @@ export function Simulator() {
             onChange={(family) => setForm((f) => ({ ...f, family }))}
           />
         ) : null}
-        {step === 3 ? <ResultStep result={result} form={form} /> : null}
-
-        {step === 3 ? <div className="mt-8">{historyPanel}</div> : null}
+        {step === 3 ? (
+          <ResultStep result={result} form={form} history={historyPanel} resultAnchorId={RESULT_TOP_ID} />
+        ) : null}
 
         {step < 3 && result.filingNeedsTaxReturn ? (
           <div className="mt-8">
@@ -166,7 +212,7 @@ export function Simulator() {
           <button
             type="button"
             disabled={isFirst}
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            onClick={() => moveToStep(Math.max(0, step - 1))}
             className="btn-ghost"
           >
             戻る
@@ -181,7 +227,7 @@ export function Simulator() {
                 次へ
               </button>
             ) : (
-              <button type="button" onClick={() => setStep(0)} className="btn-secondary">
+              <button type="button" onClick={() => moveToStep(0)} className="btn-secondary">
                 入力を見直す
               </button>
             )}

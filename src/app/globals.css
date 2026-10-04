@@ -12,7 +12,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--gift-sticky-offset, 18rem);
+  scroll-padding-top: 5.5rem;
 }
 
 body {
@@ -256,6 +256,12 @@ input[type="number"] {
 
   .gift-remain-accent {
     color: #f0d48a;
+  }
+
+  .gift-remain-bar {
+    background-color: #12192b;
+    background-image: linear-gradient(165deg, #243250 0%, #1c2740 58%, #12192b 100%);
+    color: #fff;
   }
 
   .gift-step-anchor {
