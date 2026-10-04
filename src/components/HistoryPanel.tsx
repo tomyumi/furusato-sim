@@ -40,6 +40,9 @@ export function HistoryPanel({
           <p className="mt-1 text-sm leading-6 text-ink-500">
             結果を開くと自動で保存されます。最大3件まで残り、選んで今回の結果と比較できます。
           </p>
+          <p className="mt-1 text-sm leading-6 text-ink-500">
+            ※プライバシー保護のため、入力データおよび履歴はサーバーに送信されず、すべてお客様のブラウザ内で完結します。
+          </p>
         </div>
         {entries.length > 0 ? (
           <button
