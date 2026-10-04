@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
 import { GUIDES } from "@/lib/guides";
-import { getSiteUrl } from "@/lib/seo";
+import { CONTENT_UPDATED, getSiteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = getSiteUrl();
-  const lastModified = new Date();
+  const lastModified = CONTENT_UPDATED;
 
   return [
     {
-      url: base,
+      url: `${base}/`,
       lastModified,
       changeFrequency: "weekly",
       priority: 1,

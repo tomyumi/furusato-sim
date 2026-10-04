@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { ClientShell } from "@/components/ClientShell";
+import { JsonLd } from "@/components/JsonLd";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getSiteUrl, OG_IMAGE_PATH, SEO } from "@/lib/seo";
+import { getSiteUrl, INDEX_FOLLOW_ROBOTS, OG_IMAGE_PATH, SEO } from "@/lib/seo";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
-  metadataBase: new URL(getSiteUrl()),
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${SEO.defaultTitle} | ${SEO.brand}`,
     template: `%s | ${SEO.brand}`,
@@ -26,24 +30,11 @@ export const metadata: Metadata = {
     "控除上限額 シミュレーション",
     "限度額",
   ],
-  alternates: {
-    canonical: "/",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
+  robots: INDEX_FOLLOW_ROBOTS,
   openGraph: {
     type: "website",
     locale: SEO.locale,
-    url: "/",
+    url: siteUrl,
     siteName: SEO.brand,
     title: SEO.defaultTitle,
     description: SEO.defaultDescription,
@@ -67,9 +58,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
-    : undefined,
+  verification: {
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() ||
+      "N-noCgUJH5_9fg03bsMDHLfn3A5OerHBn3TeB9SaaMw",
+  },
 };
 
 export default function RootLayout({
@@ -80,6 +73,17 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: SEO.brand,
+            alternateName: SITE.name,
+            url: siteUrl,
+            inLanguage: "ja",
+            description: SEO.defaultDescription,
+          }}
+        />
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <ClientShell>{children}</ClientShell>

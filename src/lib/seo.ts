@@ -10,6 +10,21 @@ export const SEO = {
 
 export const OG_IMAGE_PATH = "/opengraph-image";
 
+/** サイトマップ lastmod 用。記事の実質的な更新日に合わせて上げる。 */
+export const CONTENT_UPDATED = new Date("2026-10-04T00:00:00+09:00");
+
+export const INDEX_FOLLOW_ROBOTS: NonNullable<Metadata["robots"]> = {
+  index: true,
+  follow: true,
+  googleBot: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large",
+    "max-snippet": -1,
+    "max-video-preview": -1,
+  },
+};
+
 export function getSiteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (explicit) return explicit.replace(/\/$/, "");
@@ -47,10 +62,7 @@ export function pageMetadata({
     title,
     description,
     alternates: { canonical },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    robots: INDEX_FOLLOW_ROBOTS,
     openGraph: {
       title: titleText,
       description,
@@ -68,3 +80,4 @@ export function pageMetadata({
     },
   };
 }
+
