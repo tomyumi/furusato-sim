@@ -1,29 +1,49 @@
-const SITES = [
-  { name: "楽天ふるさと納税", href: "#" },
-  { name: "さとふる", href: "#" },
-  { name: "ふるさとチョイス", href: "#" },
-  { name: "ふるなび", href: "#" },
-] as const;
+"use client";
 
-export function SiteLinks() {
+import { buildPortalLinks } from "@/lib/giftCatalog";
+
+interface SiteLinksProps {
+  keyword: string;
+  amount?: number;
+  heading: string;
+  appear?: boolean;
+}
+
+export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLinksProps) {
+  const sites = buildPortalLinks(keyword, amount);
+  const sample = sites[0]?.query ?? keyword;
+
   return (
     <nav
       data-pdf-hide
-      className="min-w-0 rounded-xl border border-ink-200 bg-ink-50/70 px-3.5 py-3"
-      aria-label="ふるさと納税サイト"
+      className={`min-w-0 rounded-xl border border-cedar-200 bg-[#fbf8f3] p-5 sm:p-6 ${appear ? "gift-pinpoint" : ""}`}
+      aria-label={heading}
     >
-      <p className="text-sm font-semibold leading-6 text-ink-900">返礼品を探す</p>
-      <p className="mt-0.5 text-xs leading-5 text-ink-500">
-        算出した上限額を目安に、各サイトで寄付先を選べます。
+      <p className="kicker">PORTALS</p>
+      <p className="mt-2 font-display text-lg leading-snug text-ink-950">{heading}</p>
+      <p className="mt-2 text-sm leading-7 text-ink-600">
+        選んだ条件で、各ふるさと納税ポータルの検索ページを新しいタブで開きます。広告リンクです。
       </p>
-      <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {SITES.map((site) => (
+      <p className="mt-1 break-words text-xs leading-6 text-ink-500">検索キーワード例: {sample}</p>
+      <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {sites.map((site) => (
           <li key={site.name} className="min-w-0">
             <a
               href={site.href}
-              className="flex min-w-0 items-center justify-center rounded-full border border-ink-300 bg-white px-4 py-2.5 text-sm font-medium leading-5 text-ink-800 transition hover:border-mist-500 hover:bg-mist-50 hover:text-mist-900"
+              target="_blank"
+              rel="noopener noreferrer sponsored nofollow"
+              className="btn-portal"
             >
-              {site.name}
+              <span className="absolute inset-y-0 left-0 w-1 bg-cedar-400" aria-hidden />
+              <span className="pl-2">
+                <span className="block text-sm font-semibold text-ink-950">{site.name}で探す</span>
+                <span className="mt-0.5 block text-xs font-medium text-ink-500">
+                  {sample}（外部サイト）
+                </span>
+              </span>
+              <span className="shrink-0 text-sm font-semibold text-cedar-700" aria-hidden>
+                →
+              </span>
             </a>
           </li>
         ))}

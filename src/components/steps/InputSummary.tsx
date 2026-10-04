@@ -35,7 +35,7 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div
       data-pdf-block
-      className="min-w-0 overflow-visible rounded-xl border border-cedar-300 bg-[#fbf8f3] px-3.5 py-3"
+      className="min-w-0 overflow-visible rounded-xl border border-cedar-200 bg-[#fbf8f3] p-5 sm:p-6"
     >
       <h4 className="mb-2 pb-2 text-sm font-semibold leading-6 text-cedar-950">{title}</h4>
       <div>{children}</div>

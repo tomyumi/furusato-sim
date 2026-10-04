@@ -17,12 +17,10 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
   const fromBalance = balance > 0 && rate > 0 ? Math.trunc(balance * rate) : 0;
 
   return (
-    <section className="space-y-4">
-      <header className="space-y-1">
-        <h2 className="text-2xl font-semibold leading-normal text-ink-900">
-          {"家族と住宅ローン"}
-        </h2>
-        <p className="text-sm leading-6 text-ink-600">
+    <section className="space-y-6">
+      <header className="space-y-2">
+        <h3 className="font-display text-2xl text-ink-950">家族と住宅ローン</h3>
+        <p className="text-sm leading-7 text-ink-600">
           人数や金額は空欄のままでも構いません。未入力は0として計算します。
         </p>
       </header>
@@ -39,10 +37,10 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
           ).map(([id, label]) => (
             <label
               key={id}
-              className={`flex min-w-0 cursor-pointer items-start gap-2 rounded-xl border px-3 py-2.5 text-sm leading-6 ${
+              className={`choice-chip ${
                 value.spouseStatus === id
-                  ? "border-mist-500 bg-mist-50 text-mist-900"
-                  : "border-ink-200 bg-white text-ink-700"
+                  ? "border-cedar-400 bg-cedar-50 text-ink-900"
+                  : "border-ink-200 bg-white text-ink-700 hover:border-ink-300"
               }`}
             >
               <input
@@ -102,7 +100,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
         />
       </div>
 
-      <div className="space-y-3 overflow-visible rounded-xl border border-ink-200 bg-ink-50/50 p-3.5">
+      <div className="card-muted space-y-4">
         <label className="flex items-start gap-3 text-sm font-medium leading-6 text-ink-800">
           <input
             type="checkbox"
@@ -128,7 +126,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
             <label className="block space-y-1.5">
               <span className="text-sm font-medium text-ink-800">控除率</span>
               <select
-                className="w-full min-w-0 rounded-xl border border-ink-200 bg-white px-3 py-2.5 leading-6 text-ink-900 shadow-sm outline-none focus:border-mist-500 focus:ring-2 focus:ring-mist-200"
+                className="field-select"
                 value={value.housingLoanRate === "" ? "" : String(value.housingLoanRate)}
                 onChange={(e) =>
                   patch({

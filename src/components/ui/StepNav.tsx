@@ -8,8 +8,8 @@ interface StepNavProps {
 
 export function StepNav({ steps, current, onSelect }: StepNavProps) {
   return (
-    <nav aria-label="入力ステップ" className="mb-4">
-      <ol className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
+    <nav aria-label="入力ステップ">
+      <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((label, i) => {
           const active = i === current;
           const done = i < current;
@@ -18,17 +18,21 @@ export function StepNav({ steps, current, onSelect }: StepNavProps) {
               <button
                 type="button"
                 onClick={() => onSelect(i)}
-                className={`flex w-full min-w-0 items-start gap-2 overflow-visible rounded-xl px-3 py-2 text-left text-sm leading-5 transition ${
+                className={`flex w-full min-w-0 items-start gap-2.5 overflow-visible rounded-md px-3.5 py-3 text-left text-sm leading-5 transition duration-200 ${
                   active
-                    ? "bg-ink-900 text-white"
+                    ? "bg-ink-900 text-white shadow-sm"
                     : done
-                      ? "bg-mist-100 text-mist-800 hover:bg-mist-200"
-                      : "bg-ink-100 text-ink-500 hover:bg-ink-200"
+                      ? "border border-cedar-200 bg-cedar-50 text-cedar-900 hover:bg-cedar-100"
+                      : "border border-ink-100 bg-white text-ink-500 hover:border-ink-200 hover:bg-ink-50"
                 }`}
               >
                 <span
-                  className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                    active ? "bg-white/20" : done ? "bg-mist-500 text-white" : "bg-white text-ink-500"
+                  className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold ${
+                    active
+                      ? "bg-cedar-400 text-ink-950"
+                      : done
+                        ? "bg-cedar-600 text-white"
+                        : "bg-ink-100 text-ink-500"
                   }`}
                 >
                   {done ? "✓" : i + 1}

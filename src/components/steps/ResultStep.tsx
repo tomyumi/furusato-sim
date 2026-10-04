@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import { Accordion } from "@/components/ui/Accordion";
-import { FilingAlert } from "@/components/FilingAlert";
-import { SiteLinks } from "@/components/SiteLinks";
+import { FilingAdvisor } from "@/components/FilingAdvisor";
+import { GiftCart } from "@/components/GiftCart";
 import { InputSummary } from "@/components/steps/InputSummary";
 import { formatDeductionRatePercent } from "@/lib/calc/housingLoan";
 import { formatPercent, formatYen } from "@/lib/format";
@@ -22,13 +22,13 @@ function BreakdownTable({ lines }: { lines: BreakdownLine[] }) {
         <div
           key={line.label + String(line.amount) + (line.unit ?? "")}
           data-pdf-unit
-          className="border-b border-ink-100 py-2.5 last:border-b-0"
+          className="border-b border-ink-100 py-3 last:border-b-0"
         >
           <div className="text-sm leading-6 text-ink-800">{line.label}</div>
           {line.note ? (
             <div className="mt-0.5 text-xs leading-5 text-ink-500">{line.note}</div>
           ) : null}
-          <div className="mt-0.5 text-right text-sm font-medium leading-6 tabular-nums text-ink-900">
+          <div className="mt-1 text-right text-base font-semibold leading-7 tabular-nums text-ink-950">
             {line.unit === "percent" ? formatPercent(line.amount) : formatYen(line.amount)}
           </div>
         </div>
@@ -68,58 +68,47 @@ export function ResultStep({ result, form }: ResultStepProps) {
   }
 
   return (
-    <section className="min-w-0 space-y-4">
-      <header className="flex min-w-0 flex-col gap-3">
-        <div className="min-w-0 space-y-1">
-          <h2 className="text-2xl font-semibold leading-normal text-ink-900">
-            {"シミュレーション結果"}
-          </h2>
-          <p className="text-sm leading-6 text-ink-600">
-            自己負担2,000円を除き、寄付金が全額控除される目安の上限です。
+    <section className="min-w-0 space-y-8">
+      <header className="flex min-w-0 flex-col gap-5">
+        <div className="min-w-0 space-y-2">
+          <h3 className="font-display text-2xl text-ink-950 sm:text-3xl">控除上限額のシミュレーション結果</h3>
+          <p className="text-sm leading-7 text-ink-600">
+            自己負担2,000円を除き、ふるさと納税をいくらまで寄付できるかの限度額（目安）です。
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={busy}
-          className="w-full rounded-full bg-ink-900 px-5 py-2 text-sm font-medium leading-5 text-white transition hover:bg-ink-800 disabled:opacity-60 sm:w-auto sm:self-start"
-        >
+        <button type="button" onClick={handleDownload} disabled={busy} className="btn-primary sm:self-start">
           {busy ? "PDFを作成中…" : "結果をPDFでダウンロード"}
         </button>
       </header>
-      {error ? <p className="text-sm text-cedar-800">{error}</p> : null}
+      {error ? <p className="text-sm font-medium text-cedar-800">{error}</p> : null}
 
-      <article ref={captureRef} className="min-w-0 space-y-3 overflow-visible bg-white">
+      <article ref={captureRef} className="min-w-0 space-y-6 overflow-visible bg-white">
         <div data-pdf-block className="min-w-0">
-          <h2 className="text-xl font-semibold leading-normal text-ink-900">
-            {"ふるさと納税 控除上限シミュレーション"}
-          </h2>
+          <p className="font-display text-xl text-ink-950">ふるさと納税の限度額計算（控除上限額）</p>
         </div>
 
-        <div data-pdf-block>
-          <FilingAlert result={result} />
-        </div>
+        <FilingAdvisor form={form} />
 
         <div
           data-pdf-block
-          className="min-w-0 overflow-visible rounded-2xl bg-ink-950 px-4 py-4 text-white sm:px-5"
+          className="min-w-0 overflow-visible rounded-xl bg-ink-950 px-6 py-7 text-white sm:px-8"
         >
-          <p className="text-xs font-medium tracking-[0.18em] text-mist-300">RESULT</p>
-          <p className="mt-1.5 text-sm leading-6 text-ink-200">ふるさと納税の控除上限額（目安）</p>
-          <p className="mt-2 break-words text-3xl font-semibold leading-normal sm:text-4xl">
+          <p className="kicker text-cedar-300">RESULT</p>
+          <p className="mt-3 text-sm leading-7 text-ink-300">ふるさと納税の控除上限額（目安）</p>
+          <p className="amount-figure mt-2 text-4xl text-white sm:text-5xl">
             {formatYen(result.furusatoLimit)}
           </p>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-ink-300">
+          <p className="mt-4 max-w-xl text-sm leading-7 text-ink-300">
             この金額までの寄付なら、実質負担はおよそ2,000円です。
           </p>
         </div>
 
-        <SiteLinks />
+        <GiftCart limit={result.furusatoLimit} />
 
         {result.housingLoanPossibleAmount > 0 ? (
           <div
             data-pdf-block
-            className="min-w-0 overflow-visible rounded-xl border border-ink-200 bg-white px-3.5 py-3"
+            className="card-gold"
           >
             <h3 className="text-sm font-semibold leading-6 text-ink-800">
               住宅ローン控除の振り分け
@@ -156,7 +145,7 @@ export function ResultStep({ result, form }: ResultStepProps) {
         {result.notices.length > 0 ? (
           <div
             data-pdf-block
-            className="min-w-0 overflow-visible rounded-xl border border-ink-200 bg-ink-50 px-3.5 py-3"
+            className="card-muted"
           >
             <h3 className="text-sm font-semibold leading-6 text-ink-800">計算上の補足</h3>
             <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-6 text-ink-700">
@@ -169,32 +158,29 @@ export function ResultStep({ result, form }: ResultStepProps) {
           </div>
         ) : null}
 
-        <dl data-pdf-block className="grid grid-cols-1 gap-2 md:grid-cols-3">
-          <div className="min-w-0 overflow-visible rounded-xl border border-cedar-300 bg-[#fbf8f3] px-3.5 py-3">
-            <dt className="text-xs leading-5 text-cedar-800">総所得金額等</dt>
-            <dd className="mt-1 break-words font-medium leading-6 tabular-nums text-cedar-950">
+        <dl data-pdf-block className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="card-gold">
+            <dt className="text-xs tracking-wide text-cedar-800">総所得金額等</dt>
+            <dd className="amount-figure mt-2 text-xl text-cedar-950">
               {formatYen(result.totalIncome)}
             </dd>
           </div>
-          <div className="min-w-0 overflow-visible rounded-xl border border-cedar-300 bg-[#fbf8f3] px-3.5 py-3">
-            <dt className="text-xs leading-5 text-cedar-800">住民税所得割</dt>
-            <dd className="mt-1 break-words font-medium leading-6 tabular-nums text-cedar-950">
+          <div className="card-gold">
+            <dt className="text-xs tracking-wide text-cedar-800">住民税所得割</dt>
+            <dd className="amount-figure mt-2 text-xl text-cedar-950">
               {formatYen(result.residentTaxIncomeLevy)}
             </dd>
           </div>
-          <div className="min-w-0 overflow-visible rounded-xl border border-cedar-300 bg-[#fbf8f3] px-3.5 py-3">
-            <dt className="text-xs leading-5 text-cedar-800">所得税の限界税率</dt>
-            <dd className="mt-1 break-words font-medium leading-6 tabular-nums text-cedar-950">
+          <div className="card-gold">
+            <dt className="text-xs tracking-wide text-cedar-800">所得税の限界税率</dt>
+            <dd className="amount-figure mt-2 text-xl text-cedar-950">
               {formatPercent(result.marginalIncomeTaxRate)}
             </dd>
           </div>
         </dl>
 
-        <div className="space-y-2">
-          <h3
-            data-pdf-block
-            className="text-sm font-semibold leading-6 text-ink-800"
-          >
+        <div className="space-y-3">
+          <h3 data-pdf-block className="font-display text-lg text-ink-950">
             計算内訳
           </h3>
           <Accordion title="所得の内訳" defaultOpen forceOpen={expandAll}>
@@ -225,7 +211,7 @@ export function ResultStep({ result, form }: ResultStepProps) {
         type="button"
         onClick={handleDownload}
         disabled={busy}
-        className="w-full rounded-full border border-ink-300 bg-white px-5 py-2 text-sm font-medium leading-5 text-ink-800 transition hover:bg-ink-50 disabled:opacity-60 sm:w-auto"
+        className="btn-secondary w-full sm:w-auto"
       >
         {busy ? "PDFを作成中…" : "結果をPDFでダウンロード"}
       </button>

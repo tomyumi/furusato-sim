@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { NumberField } from "@/components/ui/NumberField";
 import type { BlueSpecialDeduction, IncomeInput, OptionalNumber } from "@/lib/types";
 
@@ -29,19 +30,21 @@ export function IncomeStep({
   onOccupancyYearChange,
 }: IncomeStepProps) {
   const patch = (partial: Partial<IncomeInput>) => onChange({ ...value, ...partial });
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <section className="space-y-4">
-      <header className="space-y-1">
-        <h2 className="text-2xl font-semibold leading-normal text-ink-900">
-          {"源泉徴収票の金額を書き写す"}
-        </h2>
-        <p className="text-sm leading-6 text-ink-600">
-          {"空欄のまま次へ進んでも、未入力は0円として計算します。分かる欄だけ書いてください。"}
+    <section className="space-y-6">
+      <header className="space-y-2">
+        <h3 className="font-display text-2xl text-ink-950">源泉徴収票の金額を書き写す</h3>
+        <p className="text-sm leading-7 text-ink-600">
+          空欄のまま次へ進んでも、未入力は0円として計算します。分かる欄だけ書いて、限度額の目安を出してください。
         </p>
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <NumberField
           label="対象年"
           value={taxYear}
@@ -62,7 +65,7 @@ export function IncomeStep({
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <NumberField
           label="支払金額（本業）"
           badge="源泉徴収票"
@@ -83,11 +86,9 @@ export function IncomeStep({
         />
       </div>
 
-      <div className="space-y-3 overflow-visible rounded-xl border border-cedar-200/80 bg-cedar-50/60 p-3.5">
-        <h3 className="text-sm font-semibold leading-6 text-cedar-900">
-          事業所得（ない人は空欄のまま）
-        </h3>
-        <div className="grid gap-3 sm:grid-cols-2">
+      <div className="card-gold space-y-4">
+        <h3 className="font-display text-lg text-cedar-950">事業所得（ない人は空欄のまま）</h3>
+        <div className="grid gap-5 sm:grid-cols-2">
           <NumberField
             label="売上（収入金額）"
             badge="確定申告"
@@ -108,8 +109,10 @@ export function IncomeStep({
         <label className="block space-y-1.5">
           <span className="text-sm font-medium text-ink-800">青色申告特別控除</span>
           <select
-            className="w-full min-w-0 rounded-xl border border-ink-200 bg-white px-3 py-2.5 leading-6 text-ink-900 shadow-sm outline-none focus:border-mist-500 focus:ring-2 focus:ring-mist-200"
+            className="field-select"
             value={value.blueSpecialDeduction === "" ? "" : String(value.blueSpecialDeduction)}
+            suppressHydrationWarning
+            disabled={!mounted}
             onChange={(e) =>
               patch({
                 blueSpecialDeduction:
