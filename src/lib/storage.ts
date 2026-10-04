@@ -1,5 +1,4 @@
-import type { GiftCartItem } from "@/lib/giftCatalog";
-import { isValidCartItem } from "@/lib/giftCatalog";
+import { cartTotal, isValidCartItem, type GiftCartItem } from "@/lib/giftCatalog";
 import {
   defaultFilingAdvisorAnswers,
   type FilingAdvisorAnswers,
@@ -12,6 +11,7 @@ import { toAmount } from "@/lib/numbers";
 const DRAFT_KEY = "furusato-sim-draft-v1";
 const HISTORY_KEY = "furusato-sim-history-v1";
 const CART_KEY = "furusato-sim-cart-v1";
+const CART_ADJUST_KEY = "furusato-sim-cart-adjust-v1";
 const WISHLIST_KEY = "furusato-sim-wishlist-v1";
 const FILING_ADVICE_KEY = "furusato-sim-filing-advice-v1";
 export const MAX_HISTORY = 12;
@@ -148,6 +148,17 @@ export function saveGiftCart(items: GiftCartItem[]) {
   writeJson(CART_KEY, items.filter(isValidCartItem));
 }
 
+export function loadCartAdjustment(): number | "" {
+  const saved = readJson<number | "" | null>(CART_ADJUST_KEY, "");
+  if (saved === "" || saved === null) return "";
+  const n = Number(saved);
+  return Number.isFinite(n) ? Math.trunc(n) : "";
+}
+
+export function saveCartAdjustment(value: number | "") {
+  writeJson(CART_ADJUST_KEY, value === "" ? "" : Math.trunc(value));
+}
+
 export interface GiftWishlist {
   id: string;
   name: string;
@@ -173,7 +184,7 @@ export function loadWishlists(): GiftWishlist[] {
         name: entry.name.trim() || "名称未設定",
         savedAt: typeof entry.savedAt === "number" ? entry.savedAt : Date.now(),
         items: cart,
-        total: cart.reduce((sum, item) => sum + item.amount * item.qty, 0),
+    total: cartTotal(cart),
       } satisfies GiftWishlist;
     })
     .filter((entry): entry is GiftWishlist => entry !== null);
@@ -194,7 +205,7 @@ export function saveWishlist(name: string, items: GiftCartItem[]): GiftWishlist 
     name: trimmed.slice(0, 40),
     savedAt: Date.now(),
     items: cart,
-    total: cart.reduce((sum, item) => sum + item.amount * item.qty, 0),
+    total: cartTotal(cart),
   };
   persistWishlists([entry, ...loadWishlists()].slice(0, MAX_WISHLISTS));
   return entry;

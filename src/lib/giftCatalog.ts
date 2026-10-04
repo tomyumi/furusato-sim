@@ -323,8 +323,17 @@ export function itemSearchQuery(item: Pick<GiftCartItem, "genreId" | "groupId" |
   return keyword;
 }
 
+export function pinpointHeadingParts(item: Pick<GiftCartItem, "genreId" | "groupId" | "leafId" | "amount">) {
+  const accent = `${item.amount.toLocaleString("ja-JP")}円前後の${itemSearchNoun(item)}`;
+  return {
+    accent,
+    rest: "を各サイトで探す",
+    full: `${accent}を各サイトで探す`,
+  };
+}
+
 export function pinpointHeading(item: Pick<GiftCartItem, "genreId" | "groupId" | "leafId" | "amount">): string {
-  return `${item.amount.toLocaleString("ja-JP")}円前後の${itemSearchNoun(item)}を各サイトで探す`;
+  return pinpointHeadingParts(item).full;
 }
 
 export function pinpointKey(item: Pick<GiftCartItem, "genreId" | "groupId" | "leafId" | "amount">): string {
@@ -335,13 +344,36 @@ export function uniquePinpoints(items: GiftCartItem[]): GiftCartItem[] {
   const seen = new Map<string, GiftCartItem>();
   for (const item of items) {
     const key = pinpointKey(item);
-    if (!seen.has(key)) seen.set(key, item);
+    const prev = seen.get(key);
+    if (!prev) {
+      seen.set(key, { ...item });
+    } else {
+      seen.set(key, { ...prev, qty: prev.qty + item.qty });
+    }
   }
   return [...seen.values()];
 }
 
+export function cartLineTotal(item: Pick<GiftCartItem, "amount" | "qty">): number {
+  const amount = Number(item.amount);
+  const qty = Number(item.qty);
+  if (!Number.isFinite(amount) || !Number.isFinite(qty)) return 0;
+  return Math.round(amount) * Math.round(qty);
+}
+
 export function cartTotal(items: GiftCartItem[]): number {
-  return items.reduce((sum, item) => sum + item.amount * item.qty, 0);
+  return items.reduce((sum, item) => sum + cartLineTotal(item), 0);
+}
+
+export function cartSpend(items: GiftCartItem[], adjustment = 0): number {
+  const extra = Number.isFinite(Number(adjustment)) ? Math.round(Number(adjustment)) : 0;
+  return cartTotal(items) + extra;
+}
+
+/** いま使える残りの枠 = 控除上限額 − （カート合計 ＋ 申込時の増減額） */
+export function remainingLimit(limit: number, items: GiftCartItem[], adjustment = 0): number {
+  const cap = Math.max(0, Math.round(Number(limit) || 0));
+  return cap - cartSpend(items, adjustment);
 }
 
 function amountRange(amount: number) {

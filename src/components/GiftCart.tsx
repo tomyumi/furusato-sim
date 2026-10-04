@@ -1,25 +1,32 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { SiteLinks } from "@/components/SiteLinks";
+import { NumberField } from "@/components/ui/NumberField";
 import { formatYen } from "@/lib/format";
 import {
   GIFT_AMOUNTS,
   GIFT_GENRES,
+  cartSpend,
   cartTotal,
   findGenre,
   findGroup,
   itemKeyword,
   itemLabel,
-  pinpointHeading,
+  pinpointHeadingParts,
   pinpointKey,
+  remainingLimit,
   uniquePinpoints,
   type GiftCartItem,
 } from "@/lib/giftCatalog";
+import { toAmount, type OptionalNumber } from "@/lib/numbers";
 import {
   formatSavedAt,
+  loadCartAdjustment,
   loadGiftCart,
   loadWishlists,
+  saveCartAdjustment,
   saveGiftCart,
   saveWishlist,
   deleteWishlist,
@@ -48,6 +55,7 @@ function stepTabClass(kind: "current" | "done" | "idle") {
 
 export function GiftCart({ limit }: GiftCartProps) {
   const [items, setItems] = useState<GiftCartItem[]>([]);
+  const [adjust, setAdjust] = useState<OptionalNumber>("");
   const [wishlists, setWishlists] = useState<GiftWishlist[]>([]);
   const [wishName, setWishName] = useState("");
   const [wishMessage, setWishMessage] = useState("");
@@ -59,59 +67,59 @@ export function GiftCart({ limit }: GiftCartProps) {
   const [leafTouched, setLeafTouched] = useState(false);
   const remainCardRef = useRef<HTMLDivElement>(null);
   const compactBarRef = useRef<HTMLDivElement>(null);
-  const [compactBar, setCompactBar] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
 
   useEffect(() => {
     setItems(loadGiftCart());
+    setAdjust(loadCartAdjustment());
     setWishlists(loadWishlists());
+    setPortalReady(true);
   }, []);
 
   useEffect(() => {
-    const card = remainCardRef.current;
-    if (!card) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setCompactBar(!entry.isIntersecting);
-      },
-      { root: null, threshold: 0, rootMargin: "-8px 0px 0px 0px" },
-    );
-    observer.observe(card);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    function applyStickyOffset() {
+    function applyBottomBarOffset() {
       const bar = compactBarRef.current;
-      const barHeight = compactBar && bar ? bar.getBoundingClientRect().height : 0;
-      const offset = Math.ceil(barHeight + 16);
-      document.documentElement.style.setProperty("--gift-sticky-offset", `${offset}px`);
+      const barHeight = bar ? bar.getBoundingClientRect().height : 0;
+      const offset = Math.ceil(barHeight);
+      document.documentElement.style.setProperty("--gift-bottom-bar", `${offset}px`);
+      document.documentElement.style.setProperty("--gift-sticky-offset", "5.5rem");
     }
 
-    applyStickyOffset();
+    applyBottomBarOffset();
     const bar = compactBarRef.current;
-    const observer = bar ? new ResizeObserver(applyStickyOffset) : null;
+    const observer = bar ? new ResizeObserver(applyBottomBarOffset) : null;
     if (bar && observer) observer.observe(bar);
-    window.addEventListener("resize", applyStickyOffset);
+    window.addEventListener("resize", applyBottomBarOffset);
     return () => {
       observer?.disconnect();
-      window.removeEventListener("resize", applyStickyOffset);
+      window.removeEventListener("resize", applyBottomBarOffset);
+      document.documentElement.style.removeProperty("--gift-bottom-bar");
       document.documentElement.style.removeProperty("--gift-sticky-offset");
     };
-  }, [compactBar]);
+  }, [portalReady]);
 
-  function persist(next: GiftCartItem[]) {
-    setItems(next);
-    saveGiftCart(next);
+  function persist(next: GiftCartItem[] | ((prev: GiftCartItem[]) => GiftCartItem[])) {
+    setItems((prev) => {
+      const resolved = typeof next === "function" ? next(prev) : next;
+      saveGiftCart(resolved);
+      return resolved;
+    });
+  }
+
+  function persistAdjust(value: OptionalNumber) {
+    setAdjust(value);
+    saveCartAdjustment(value);
   }
 
   const genre = findGenre(genreId);
   const groups = genre?.groups ?? [];
   const group = findGroup(genre, groupId);
   const leaves = group?.children ?? [];
-  const used = cartTotal(items);
-  const cap = Math.max(0, Math.round(limit));
-  const remaining = cap - used;
+  const listed = cartTotal(items);
+  const extra = toAmount(adjust);
+  const used = cartSpend(items, extra);
+  const cap = Math.max(0, Math.round(Number(limit) || 0));
+  const remaining = remainingLimit(limit, items, extra);
   const over = remaining < 0;
   const exact = !over && remaining === 0 && cap > 0;
   const pct = cap > 0 ? Math.min(120, (used / cap) * 100) : used > 0 ? 120 : 0;
@@ -122,7 +130,11 @@ export function GiftCart({ limit }: GiftCartProps) {
   const activeOffer = useMemo(() => {
     if (!groupId) return cartOffers[cartOffers.length - 1];
     const matched = items.find(
-      (item) => item.genreId === genreId && item.groupId === groupId && item.leafId === leafId,
+      (item) =>
+        item.genreId === genreId &&
+        item.groupId === groupId &&
+        item.leafId === leafId &&
+        (pickerAmount && pickerAmount > 0 ? item.amount === pickerAmount : true),
     );
     const amount =
       pickerAmount && pickerAmount > 0
@@ -130,12 +142,12 @@ export function GiftCart({ limit }: GiftCartProps) {
         : matched?.amount ?? cartOffers[cartOffers.length - 1]?.amount;
     if (!amount) return cartOffers[cartOffers.length - 1];
     return {
-      id: "focus",
+      id: matched?.id ?? "focus",
       genreId,
       groupId,
       leafId,
       amount,
-      qty: 1,
+      qty: matched?.qty ?? 1,
     } satisfies GiftCartItem;
   }, [pickerAmount, genreId, groupId, leafId, items, cartOffers]);
 
@@ -152,8 +164,7 @@ export function GiftCart({ limit }: GiftCartProps) {
     const raw = getComputedStyle(document.documentElement).getPropertyValue("--gift-sticky-offset");
     const parsed = Number.parseFloat(raw);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
-    const sticky = compactBarRef.current?.getBoundingClientRect();
-    return (sticky?.height ?? 220) + 32;
+    return 88;
   }
 
   function scrollToRemainCard() {
@@ -193,42 +204,45 @@ export function GiftCart({ limit }: GiftCartProps) {
   function addAmount(amount: number) {
     if (!groupId) return;
     setPickerAmount(amount);
-    const existing = items.find(
-      (item) =>
-        item.genreId === genreId &&
-        item.groupId === groupId &&
-        item.leafId === leafId &&
-        item.amount === amount,
-    );
-    if (existing) {
-      persist(
-        items.map((item) => (item.id === existing.id ? { ...item, qty: item.qty + 1 } : item)),
+    persist((prev) => {
+      const existing = prev.find(
+        (item) =>
+          item.genreId === genreId &&
+          item.groupId === groupId &&
+          item.leafId === leafId &&
+          item.amount === amount,
       );
-      return;
-    }
-    persist([
-      ...items,
-      {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        genreId,
-        groupId,
-        leafId,
-        amount,
-        qty: 1,
-      },
-    ]);
+      if (existing) {
+        return prev.map((item) => (item.id === existing.id ? { ...item, qty: item.qty + 1 } : item));
+      }
+      return [
+        ...prev,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          genreId,
+          groupId,
+          leafId,
+          amount,
+          qty: 1,
+        },
+      ];
+    });
   }
 
   function changeQty(id: string, delta: number) {
-    persist(
-      items
+    const current = items.find((item) => item.id === id);
+    persist((prev) =>
+      prev
         .map((item) => (item.id === id ? { ...item, qty: item.qty + delta } : item))
         .filter((item) => item.qty > 0),
     );
+    if (current && current.qty + delta > 0) {
+      focusCartItem({ ...current, qty: current.qty + delta });
+    }
   }
 
   function removeItem(id: string) {
-    persist(items.filter((item) => item.id !== id));
+    persist((prev) => prev.filter((item) => item.id !== id));
   }
 
   function focusCartItem(item: GiftCartItem) {
@@ -279,15 +293,49 @@ export function GiftCart({ limit }: GiftCartProps) {
         ? ""
         : "この金額までなら、自己負担およそ2,000円で寄付できます。";
 
+  const compactBarNode = (
+    <div
+      ref={compactBarRef}
+      data-pdf-hide
+      className="gift-remain-dock gift-remain-bar fixed inset-x-0 bottom-0 z-[80] border-t border-white/10"
+    >
+      <div className="h-0.5 bg-ink-950" aria-hidden>
+        <div className={`h-full ${over ? "bg-cedar-400" : "bg-cedar-300"}`} style={{ width: barWidth }} />
+      </div>
+      <button
+        type="button"
+        onClick={scrollToRemainCard}
+        className="grid w-full min-w-0 grid-cols-3 items-end gap-2 px-4 py-2.5 text-left sm:gap-6 sm:px-8 sm:py-3"
+        aria-label={`いま使える残りの枠 ${formatYen(remaining)}、控除上限額 ${formatYen(cap)}、カート合計 ${formatYen(used)}。詳細へ戻る`}
+      >
+        <span className="min-w-0">
+          <span className="block text-[10px] font-semibold tracking-wide text-cedar-200 sm:text-[11px]">
+            いま使える残りの枠
+          </span>
+          <span className="amount-figure gift-remain-accent mt-0.5 block truncate text-lg leading-none sm:text-2xl">
+            {formatYen(remaining)}
+          </span>
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[10px] tracking-wide text-ink-300 sm:text-[11px]">控除上限額</span>
+          <span className="amount-figure mt-0.5 block truncate text-sm leading-none text-white sm:text-xl">
+            {formatYen(cap)}
+          </span>
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[10px] tracking-wide text-ink-300 sm:text-[11px]">カート合計</span>
+          <span className="amount-figure mt-0.5 block truncate text-sm leading-none text-white sm:text-xl">
+            {formatYen(used)}
+          </span>
+        </span>
+      </button>
+    </div>
+  );
+
   return (
     <section data-pdf-hide className="gift-selector min-w-0 space-y-6 p-6 sm:p-8" aria-label="マイ返礼品セレクター">
       <header className="min-w-0 pt-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="kicker">GIFT SELECTOR</p>
-          <span className="rounded-full bg-cedar-600 px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-white">
-            このサイトの主役
-          </span>
-        </div>
+        <p className="kicker">GIFT SELECTOR</p>
         <h3 className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl">マイ返礼品セレクター</h3>
       </header>
 
@@ -301,20 +349,24 @@ export function GiftCart({ limit }: GiftCartProps) {
       </div>
 
       <div ref={remainCardRef} className="gift-remain px-4 py-4 shadow-lg sm:px-6 sm:py-5">
-        <div className="grid grid-cols-3 gap-2 sm:gap-5">
+        <div className="grid grid-cols-3 items-end gap-2 sm:gap-5">
           <div className="min-w-0">
             <p className="text-[10px] tracking-wide text-ink-300 sm:text-xs">控除上限（総枠）</p>
-            <p className="amount-figure mt-1 text-sm text-white sm:text-2xl">{formatYen(cap)}</p>
+            <p className="amount-figure mt-1 whitespace-nowrap break-normal text-sm text-white sm:text-2xl">
+              {formatYen(cap)}
+            </p>
           </div>
           <div className="min-w-0">
             <p className="text-[10px] tracking-wide text-ink-300 sm:text-xs">カート合計</p>
-            <p className="amount-figure mt-1 text-sm text-white sm:text-2xl">{formatYen(used)}</p>
+            <p className="amount-figure mt-1 whitespace-nowrap break-normal text-sm text-white sm:text-2xl">
+              {formatYen(used)}
+            </p>
           </div>
           <div className="min-w-0 rounded-lg bg-white/10 px-2 py-2 sm:px-4 sm:py-3">
             <p className="text-[10px] font-semibold tracking-wide text-cedar-200 sm:text-xs">
               {over ? "超過額" : "いま使える残りの枠"}
             </p>
-            <p className="amount-figure gift-remain-accent mt-1 text-lg sm:text-4xl">
+            <p className="amount-figure gift-remain-accent mt-1 whitespace-nowrap break-normal text-lg sm:text-3xl">
               {formatYen(Math.abs(remaining))}
             </p>
           </div>
@@ -338,50 +390,19 @@ export function GiftCart({ limit }: GiftCartProps) {
         {remainingNote ? (
           <p className="mt-1 hidden text-sm leading-6 text-ink-300 sm:block">{remainingNote}</p>
         ) : null}
+        {extra !== 0 ? (
+          <p className="mt-2 text-xs leading-6 text-ink-300 sm:text-sm">
+            カート内訳 {formatYen(listed)}
+            {extra > 0 ? " ＋ " : " − "}
+            申込時の増減 {formatYen(Math.abs(extra))}
+          </p>
+        ) : null}
         <p className="mt-2 hidden text-sm font-medium leading-7 text-cedar-200 sm:block">
           この残りの枠から、下の3ステップで返礼品条件を選ぶ → 各サイトの検索ボタンが現れます。
         </p>
       </div>
 
-      <div
-        ref={compactBarRef}
-        data-pdf-hide
-        aria-hidden={!compactBar}
-        className={`fixed inset-x-0 top-0 z-50 border-b border-white/10 shadow-lg transition-transform duration-300 ease-out ${
-          compactBar ? "translate-y-0" : "pointer-events-none -translate-y-full"
-        }`}
-      >
-        <button
-          type="button"
-          onClick={scrollToRemainCard}
-          tabIndex={compactBar ? 0 : -1}
-          className="gift-remain-bar flex w-full min-w-0 items-center gap-3 px-4 py-2.5 text-left sm:px-8"
-          aria-label="残りの枠の詳細に戻る"
-        >
-          <p className="min-w-0 flex-1 truncate">
-            <span className="text-[11px] font-semibold tracking-wide text-cedar-200">
-              {over ? "超過額：" : "いま使える残りの枠："}
-            </span>
-            <span className="amount-figure gift-remain-accent ml-1.5 text-base leading-none sm:ml-2 sm:text-xl">
-              {formatYen(Math.abs(remaining))}
-            </span>
-          </p>
-          <p className="shrink-0 text-[10px] leading-4 text-ink-300 sm:text-[11px] sm:leading-5">
-            控除上限額{" "}
-            <span className="tabular-nums font-semibold text-white">{formatYen(cap)}</span>
-          </p>
-          <p className="shrink-0 text-[10px] leading-4 text-ink-300 sm:text-[11px] sm:leading-5">
-            カート合計{" "}
-            <span className="tabular-nums font-semibold text-white">{formatYen(used)}</span>
-          </p>
-        </button>
-        <div className="h-0.5 bg-ink-950" aria-hidden>
-          <div
-            className={`h-full ${over ? "bg-cedar-400" : "bg-cedar-300"}`}
-            style={{ width: barWidth }}
-          />
-        </div>
-      </div>
+      {portalReady ? createPortal(compactBarNode, document.body) : null}
 
       <p className="text-center text-sm leading-7 text-ink-600">
         💡 お好みの条件を選ぶと、各ポータルサイトの検索ページに連動します
@@ -503,7 +524,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           {itemLabel({ genreId, groupId, leafId })} に加算する金額
         </p>
         <p className="mt-1 text-xs leading-6 text-ink-500">
-          残りの枠 {formatYen(Math.abs(remaining))} を目安に、ワンタップでカートへ追加します。
+          残りの枠 {formatYen(remaining)} を目安に、ワンタップでカートへ追加します。
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
           {GIFT_AMOUNTS.map((amount) => (
@@ -519,9 +540,43 @@ export function GiftCart({ limit }: GiftCartProps) {
         </div>
       </div>
 
-      <div className="card-muted">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-base font-semibold leading-6 text-ink-900">カート</p>
+      <div className="rounded-xl border border-ink-100 bg-white p-4 sm:p-5">
+        <NumberField
+          id="cart-application-adjust"
+          label="申込時の増減額"
+          value={adjust}
+          onChange={persistAdjust}
+          hint="カートの単価や個数はそのままです。実際の申し込み金額との差額を入力します。プラスでカート合計が増え、マイナスで減ります。空欄は0円です。"
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[1000, 3000, -1000, -3000].map((delta) => (
+            <button
+              key={delta}
+              type="button"
+              className="rounded-md border border-ink-200 bg-white px-2.5 py-1.5 text-xs font-medium leading-5 text-ink-700 hover:border-cedar-400 hover:bg-cedar-50"
+              onClick={() => persistAdjust(toAmount(adjust) + delta)}
+            >
+              {delta > 0 ? `＋${delta.toLocaleString("ja-JP")}円` : `${delta.toLocaleString("ja-JP")}円`}
+            </button>
+          ))}
+          {toAmount(adjust) !== 0 || adjust !== "" ? (
+            <button
+              type="button"
+              className="rounded-md px-2.5 py-1.5 text-xs font-medium leading-5 text-ink-500 underline-offset-2 hover:underline"
+              onClick={() => persistAdjust("")}
+            >
+              増減をクリア
+            </button>
+          ) : null}
+        </div>
+      </div>
+
+      <div
+        id="gift-cart-items"
+        className="overflow-hidden rounded-xl border border-ink-100 bg-white"
+      >
+        <div className="flex items-center justify-between gap-2 border-b border-ink-100 px-4 py-3 sm:px-5">
+          <p className="text-base font-semibold leading-6 text-ink-900">カートの内訳</p>
           {items.length > 0 ? (
             <button
               type="button"
@@ -533,40 +588,42 @@ export function GiftCart({ limit }: GiftCartProps) {
           ) : null}
         </div>
         {items.length === 0 ? (
-          <p className="mt-1 text-xs leading-5 text-ink-500">
-            金額ボタンを押すと、ここに割り振りが入り、下に検索ボタンが出ます。
+          <p className="px-4 py-4 text-sm leading-6 text-ink-500 sm:px-5">
+            上の金額ボタンを押すと、ここに割り振りが入ります。数量は − ／ ＋ でその場で変えられます。
           </p>
         ) : (
-          <ul className="mt-2 divide-y divide-ink-100">
+          <ul className="divide-y divide-ink-100 px-4 sm:px-5">
             {items.map((item) => (
-              <li key={item.id} className="flex min-w-0 flex-col gap-2 py-2 sm:flex-row sm:items-center">
+              <li key={item.id} className="gift-cart-line">
                 <button type="button" className="min-w-0 flex-1 text-left" onClick={() => focusCartItem(item)}>
-                  <p className="text-sm leading-6 text-ink-800">{itemLabel(item)}</p>
+                  <p className="truncate text-sm font-medium leading-6 text-ink-900">{itemLabel(item)}</p>
                   <p className="text-xs leading-5 tabular-nums text-ink-500">
-                    {formatYen(item.amount)} × {item.qty} = {formatYen(item.amount * item.qty)}
+                    {formatYen(item.amount)} × {item.qty}
                   </p>
                 </button>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 sm:justify-end">
+                  <div className="gift-qty" role="group" aria-label={`${itemLabel(item)}の数量`}>
+                    <button
+                      type="button"
+                      className="gift-qty-btn"
+                      onClick={() => changeQty(item.id, -1)}
+                      aria-label="数量を減らす"
+                    >
+                      −
+                    </button>
+                    <span className="gift-qty-value">{item.qty}</span>
+                    <button
+                      type="button"
+                      className="gift-qty-btn"
+                      onClick={() => changeQty(item.id, 1)}
+                      aria-label="数量を増やす"
+                    >
+                      ＋
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    className="rounded-md border border-ink-200 bg-white px-2.5 py-1 text-sm leading-5"
-                    onClick={() => changeQty(item.id, -1)}
-                    aria-label="数量を減らす"
-                  >
-                    −
-                  </button>
-                  <span className="min-w-6 text-center text-sm tabular-nums">{item.qty}</span>
-                  <button
-                    type="button"
-                    className="rounded-md border border-ink-200 bg-white px-2.5 py-1 text-sm leading-5"
-                    onClick={() => changeQty(item.id, 1)}
-                    aria-label="数量を増やす"
-                  >
-                    ＋
-                  </button>
-                  <button
-                    type="button"
-                    className="text-xs leading-5 text-cedar-800 underline-offset-2 hover:underline"
+                    className="shrink-0 rounded-md px-2 py-1 text-xs font-semibold leading-5 text-cedar-800 hover:bg-cedar-50"
                     onClick={() => removeItem(item.id)}
                   >
                     削除
@@ -577,6 +634,57 @@ export function GiftCart({ limit }: GiftCartProps) {
           </ul>
         )}
       </div>
+
+      {activeOffer ? (
+        <div className="space-y-4">
+          {cartOffers.length > 0 ? (
+            <div>
+              <p className="text-sm font-semibold tracking-wide text-ink-800">カートの内訳から探す</p>
+              <p className="mt-1 text-sm leading-7 text-ink-600">
+                上のカードをクリックすると、下の各ポータルサイトの検索条件が切り替わります。
+              </p>
+              <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                {cartOffers.map((offer) => {
+                  const active = pinpointKey(offer) === pinpointKey(activeOffer);
+                  return (
+                    <button
+                      key={pinpointKey(offer)}
+                      type="button"
+                      aria-pressed={active}
+                      className={active ? "gift-offer-tab gift-offer-tab-on" : "gift-offer-tab"}
+                      onClick={() => focusCartItem(offer)}
+                    >
+                      <span className="absolute inset-y-0 left-0 w-1.5 bg-cedar-400" aria-hidden />
+                      <span className="min-w-0 flex-1 pl-2">
+                        <span className="block text-sm font-semibold leading-6">{itemLabel(offer)}</span>
+                        <span
+                          className={`mt-0.5 block text-xs tabular-nums ${
+                            active ? "text-cedar-200" : "text-ink-500"
+                          }`}
+                        >
+                          {formatYen(offer.amount)} × {offer.qty}
+                        </span>
+                      </span>
+                      {active ? <span className="gift-offer-badge">選択中</span> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+          <SiteLinks
+            key={pinpointKey(activeOffer)}
+            appear
+            keyword={itemKeyword(activeOffer)}
+            amount={activeOffer.amount}
+            heading={pinpointHeadingParts(activeOffer)}
+          />
+        </div>
+      ) : (
+        <p className="text-xs leading-5 text-ink-500">
+          種類と金額を選ぶと、その条件に合わせた各サイトの検索ボタンがここに現れます。
+        </p>
+      )}
 
       <div className="min-w-0 rounded-xl border border-ink-100 bg-white p-5">
         <p className="text-base font-semibold leading-6 text-ink-900">お気に入り</p>
@@ -656,50 +764,6 @@ export function GiftCart({ limit }: GiftCartProps) {
           </ul>
         )}
       </div>
-
-      {activeOffer ? (
-        <div className="space-y-4">
-          <div className="gift-bridge">
-            <p className="font-semibold text-ink-950">
-              残りの枠 {formatYen(Math.abs(remaining))} から選んだ条件で、各ポータルを開きます。
-            </p>
-            <p className="text-xs leading-6 text-ink-600">
-              いまの条件: {itemLabel(activeOffer)} / {formatYen(activeOffer.amount)}
-            </p>
-          </div>
-          {cartOffers.length > 1 ? (
-            <div>
-              <p className="text-xs font-semibold tracking-wide text-ink-600">カートの内訳から探す</p>
-              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {cartOffers.map((offer) => {
-                  const active = pinpointKey(offer) === pinpointKey(activeOffer);
-                  return (
-                    <button
-                      key={pinpointKey(offer)}
-                      type="button"
-                      className={chipClass(active)}
-                      onClick={() => focusCartItem(offer)}
-                    >
-                      {itemLabel(offer)} {formatYen(offer.amount)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-          <SiteLinks
-            key={pinpointKey(activeOffer)}
-            appear
-            keyword={itemKeyword(activeOffer)}
-            amount={activeOffer.amount}
-            heading={pinpointHeading(activeOffer)}
-          />
-        </div>
-      ) : (
-        <p className="text-xs leading-5 text-ink-500">
-          種類と金額を選ぶと、その条件に合わせた各サイトの検索ボタンがここに現れます。
-        </p>
-      )}
     </section>
   );
 }

@@ -100,6 +100,10 @@ export function ResultStep({ result, form, history, resultAnchorId = "simulator-
         {history}
 
         <div className="space-y-6">
+          <h3 data-pdf-block className="font-display text-lg text-ink-950">
+            今回の控除上限額のシミュレーション結果詳細
+          </h3>
+
           {result.housingLoanPossibleAmount > 0 ? (
             <div data-pdf-block className="card-gold">
               <h3 className="text-sm font-semibold leading-6 text-ink-800">住宅ローン控除の振り分け</h3>
