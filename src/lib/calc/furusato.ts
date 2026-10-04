@@ -5,6 +5,7 @@ import {
   SELF_BURDEN,
 } from "@/lib/constants";
 import type { BreakdownLine } from "@/lib/types";
+import { formatInteger } from "@/lib/format";
 
 export function calcFurusatoLimit(
   residentTaxIncomeLevy: number,
@@ -55,7 +56,7 @@ export function calcFurusatoLimit(
   lines.push({
     label: "控除上限額（寄付限度額）",
     amount: limit,
-    note: `自己負担 ${SELF_BURDEN.toLocaleString()}円込み`,
+    note: `自己負担 ${formatInteger(SELF_BURDEN)}円込み`,
   });
 
   return { limit, lines };

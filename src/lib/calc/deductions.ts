@@ -11,6 +11,7 @@ import {
   spouseSpecialDeductionResidentTax,
 } from "@/lib/constants";
 import type { BreakdownLine, NumericDeductionInput, NumericFamilyInput } from "@/lib/types";
+import { formatInteger } from "@/lib/format";
 
 export interface PersonalDeductions {
   lines: BreakdownLine[];
@@ -35,7 +36,7 @@ export function calcIncomeTaxDeductions(
   lines.push({
     label: "生命保険料控除",
     amount: life,
-    note: `上限 ${LIFE_INSURANCE_CAP.toLocaleString()}円`,
+    note: `上限 ${formatInteger(LIFE_INSURANCE_CAP)}円`,
   });
 
   const quake = clamp(
@@ -45,7 +46,7 @@ export function calcIncomeTaxDeductions(
   lines.push({
     label: "地震保険料控除",
     amount: quake,
-    note: `上限 ${EARTHQUAKE_INSURANCE_CAP.toLocaleString()}円`,
+    note: `上限 ${formatInteger(EARTHQUAKE_INSURANCE_CAP)}円`,
   });
 
   const ideco = Math.max(0, Math.floor(deductions.ideco));

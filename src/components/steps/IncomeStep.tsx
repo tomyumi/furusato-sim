@@ -126,7 +126,6 @@ export function IncomeStep({
           <select
             className="field-select"
             value={value.blueSpecialDeduction === "" ? "" : String(value.blueSpecialDeduction)}
-            suppressHydrationWarning
             onChange={(e) =>
               patch({
                 blueSpecialDeduction:

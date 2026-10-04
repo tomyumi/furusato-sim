@@ -11,6 +11,7 @@ import {
 } from "@/lib/calc/filing";
 import { loadFilingAdvisorAnswers, saveFilingAdvisorAnswers } from "@/lib/storage";
 import { normalizeForm, type SimulatorFormState } from "@/lib/types";
+import { useClientReady } from "@/lib/useClientReady";
 
 interface FilingAdvisorProps {
   form: SimulatorFormState;
@@ -71,7 +72,6 @@ function ChoiceRow({
                 name={name}
                 className="mt-1 shrink-0"
                 checked={selected}
-                suppressHydrationWarning
                 onChange={() => onChange(option.value)}
               />
               <span>{option.label}</span>
@@ -84,20 +84,22 @@ function ChoiceRow({
 }
 
 export function FilingAdvisor({ form }: FilingAdvisorProps) {
+  const mounted = useClientReady();
   const [answers, setAnswers] = useState<FilingAdvisorAnswers>(defaultFilingAdvisorAnswers);
-  const [ready, setReady] = useState(false);
+  const [storageReady, setStorageReady] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    if (!mounted) return;
     setAnswers(loadFilingAdvisorAnswers());
     setNow(new Date());
-    setReady(true);
-  }, []);
+    setStorageReady(true);
+  }, [mounted]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!storageReady) return;
     saveFilingAdvisorAnswers(answers);
-  }, [answers, ready]);
+  }, [answers, storageReady]);
 
   const advice = useMemo(
     () => adviseFiling(normalizeForm(form), answers, now ?? undefined),
@@ -108,6 +110,19 @@ export function FilingAdvisor({ form }: FilingAdvisorProps) {
     setAnswers((current) => ({ ...current, ...partial }));
 
   const highlightOneStop = advice.verdict === "oneStop" || advice.verdict === "checkAnswers";
+
+  if (!mounted || !storageReady) {
+    return (
+      <section className="min-w-0 space-y-5" aria-labelledby="filing-advisor-heading">
+        <div className="card">
+          <p id="filing-advisor-heading" className="font-display text-lg text-ink-950">
+            かんたん確認（2問）
+          </p>
+          <p className="mt-2 text-sm leading-7 text-ink-500">読み込み中…</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-w-0 space-y-5" aria-labelledby="filing-advisor-heading">

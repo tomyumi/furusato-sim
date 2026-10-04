@@ -1,7 +1,7 @@
 "use client";
 
 import { formatInputAmount, formatInputYear, formatPercent, formatYen } from "@/lib/format";
-import { formatSavedAt, type HistoryEntry } from "@/lib/storage";
+import { formatSavedAt, MAX_HISTORY, type HistoryEntry } from "@/lib/storage";
 import type { CalculationResult } from "@/lib/types";
 
 interface HistoryPanelProps {
@@ -26,20 +26,19 @@ export function HistoryPanel({
   onDelete,
   onClear,
 }: HistoryPanelProps) {
-  const compareEntries = entries.filter((e) => selectedIds.includes(e.id)).slice(0, 2);
+  const compareEntries = entries.filter((e) => selectedIds.includes(e.id)).slice(0, MAX_HISTORY);
 
   return (
     <section
       data-pdf-hide
       className="card"
       aria-label="シミュレーション履歴"
-      suppressHydrationWarning
     >
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="font-display text-lg text-ink-950">過去のシミュレーション</h2>
-          <p className="mt-1 text-sm leading-6 text-ink-500" suppressHydrationWarning>
-            結果を開くと自動で保存されます。最大2件を選んで今回の結果と比較できます。
+          <p className="mt-1 text-sm leading-6 text-ink-500">
+            結果を開くと自動で保存されます。最大3件まで残り、選んで今回の結果と比較できます。
           </p>
         </div>
         {entries.length > 0 ? (
@@ -70,7 +69,6 @@ export function HistoryPanel({
                       type="checkbox"
                       className="mt-1 shrink-0"
                       checked={checked}
-                      suppressHydrationWarning
                       onChange={() => onToggleSelect(entry.id)}
                     />
                     <span className="min-w-0">

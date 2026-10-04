@@ -1,8 +1,13 @@
 import { toAmount, type OptionalNumber } from "@/lib/numbers";
 
-export function formatYen(amount: number): string {
+/** サーバー／ブラウザで桁区切りが食い違わないよう ja-JP 固定 */
+export function formatInteger(amount: number): string {
   const sign = amount < 0 ? "-" : "";
-  return `${sign}${Math.abs(Math.round(amount)).toLocaleString("ja-JP")}円`;
+  return `${sign}${Math.abs(Math.round(amount)).toLocaleString("ja-JP")}`;
+}
+
+export function formatYen(amount: number): string {
+  return `${formatInteger(amount)}円`;
 }
 
 /** 0.1 → 10%、0.7979 → 79.79% */

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/LegalPage";
 import { pageMetadata } from "@/lib/seo";
 import { hasContactEmail, SITE } from "@/lib/site";
@@ -67,12 +66,12 @@ export default function DisclaimerPage() {
           <div className="grid gap-1 px-4 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
             <dt className="text-ink-500">連絡先</dt>
             <dd>
-              <Link
+              <a
                 href={SITE.contactPath}
                 className="text-cedar-800 underline decoration-cedar-300 underline-offset-2 hover:text-cedar-950"
               >
                 お問い合わせフォーム
-              </Link>
+              </a>
               {hasContactEmail() ? (
                 <>
                   <span className="mt-1 block">

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SITE } from "@/lib/site";
 
 const LINKS = [
@@ -11,7 +10,7 @@ const LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-ink-100 bg-ink-950 text-ink-200" suppressHydrationWarning>
+    <footer className="mt-auto border-t border-ink-100 bg-ink-950 text-ink-200">
       <div className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8">
         <p className="kicker text-cedar-300">FURUSATO LAB</p>
         <p className="mt-3 max-w-xl text-sm leading-7 text-ink-300">
@@ -21,13 +20,13 @@ export function SiteFooter() {
           <ul className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
             {LINKS.map((link) => (
               <li key={link.href}>
-                <Link
+                <a
                   href={link.href}
                   suppressHydrationWarning
                   className="text-ink-200 no-underline transition hover:text-cedar-300"
                 >
                   {link.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

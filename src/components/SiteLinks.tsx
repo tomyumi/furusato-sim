@@ -42,7 +42,6 @@ export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLink
                 target="_blank"
                 rel="noopener noreferrer sponsored nofollow"
                 className="btn-portal"
-                suppressHydrationWarning
               >
                 <span className="absolute inset-y-0 left-0 w-1.5 bg-cedar-400" aria-hidden />
                 <span className="min-w-0 flex-1 pl-2">
@@ -78,7 +77,6 @@ export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLink
           alt=""
           decoding="async"
           className="pointer-events-none absolute h-px w-px opacity-0"
-          suppressHydrationWarning
         />
       ))}
     </nav>

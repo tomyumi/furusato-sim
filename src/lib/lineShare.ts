@@ -9,9 +9,6 @@ function yenIfEntered(value: OptionalNumber): string | null {
 }
 
 export function simulationSharePageUrl(): string {
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return `${window.location.origin}/`;
-  }
   return `${getSiteUrl()}/`;
 }
 

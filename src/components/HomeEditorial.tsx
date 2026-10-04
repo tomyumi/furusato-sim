@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Accordion } from "@/components/ui/Accordion";
 import { GUIDES, HOME_FAQS } from "@/lib/guides";
 
 export function HomeEditorial() {
@@ -13,12 +11,13 @@ export function HomeEditorial() {
               ふるさと納税はいくらまで？解説コラム
             </h2>
           </div>
-          <Link
+          <a
             href="/guides"
             className="shrink-0 text-sm font-medium text-cedar-800 no-underline transition hover:text-cedar-950"
+            suppressHydrationWarning
           >
             限度額の解説一覧
-          </Link>
+          </a>
         </div>
         <p className="lede mt-3 max-w-2xl">
           控除上限額のしくみ、限度額の計算、申告の選び方、返礼品、年末の期限まで、検索の意図に合わせてまとめています。
@@ -26,14 +25,15 @@ export function HomeEditorial() {
         <ul className="mt-8 grid gap-5">
           {GUIDES.map((guide) => (
             <li key={guide.slug}>
-              <Link
+              <a
                 href={guide.href}
                 className="card block p-6 no-underline transition duration-200 hover:-translate-y-0.5 hover:border-cedar-200 sm:p-7"
+                suppressHydrationWarning
               >
                 <p className="text-xs font-semibold tracking-[0.18em] text-cedar-700">{guide.category}</p>
                 <p className="mt-2 font-display text-xl leading-snug text-ink-950">{guide.title}</p>
                 <p className="mt-3 text-sm leading-7 text-ink-600">{guide.excerpt}</p>
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
@@ -46,9 +46,17 @@ export function HomeEditorial() {
         </h2>
         <div className="mt-8 space-y-3">
           {HOME_FAQS.map((item) => (
-            <Accordion key={item.q} title={item.q}>
-              <p className="text-sm leading-7 text-ink-700">{item.a}</p>
-            </Accordion>
+            <details key={item.q} className="faq-fold">
+              <summary className="faq-fold-summary">
+                <span className="min-w-0">{item.q}</span>
+                <span className="faq-fold-mark" aria-hidden>
+                  ▾
+                </span>
+              </summary>
+              <div className="faq-fold-panel">
+                <p className="text-sm leading-7 text-ink-700">{item.a}</p>
+              </div>
+            </details>
           ))}
         </div>
       </section>

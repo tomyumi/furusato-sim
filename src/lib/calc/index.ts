@@ -15,6 +15,7 @@ import {
 } from "@/lib/calc/tax";
 import type { CalculationResult, SimulatorFormState } from "@/lib/types";
 import { normalizeForm } from "@/lib/types";
+import { formatInteger } from "@/lib/format";
 
 export function calculateFurusatoLimit(rawForm: SimulatorFormState): CalculationResult {
   const form = normalizeForm(rawForm);
@@ -68,7 +69,7 @@ export function calculateFurusatoLimit(rawForm: SimulatorFormState): Calculation
 
   if (income.blueSpecialDeduction > 0) {
     notices.push(
-      `青色申告特別控除 ${income.blueSpecialDeduction.toLocaleString()}円 を事業所得から控除しています。電子申告・複式簿記などの要件を満たさない場合は控除額が異なります。`,
+      `青色申告特別控除 ${formatInteger(income.blueSpecialDeduction)}円 を事業所得から控除しています。電子申告・複式簿記などの要件を満たさない場合は控除額が異なります。`,
     );
   }
 
@@ -128,12 +129,12 @@ export function calculateFurusatoLimit(rawForm: SimulatorFormState): Calculation
 
     if (h.leftoverAfterIncomeTax > 0) {
       notices.push(
-        `所得税から引ききれなかった ${h.leftoverAfterIncomeTax.toLocaleString()}円のうち、住民税から ${h.residentTaxCredit.toLocaleString()}円 を控除します（${h.residentTaxLimit.note}）。`,
+        `所得税から引ききれなかった ${formatInteger(h.leftoverAfterIncomeTax)}円のうち、住民税から ${formatInteger(h.residentTaxCredit)}円 を控除します（${h.residentTaxLimit.note}）。`,
       );
     }
     if (h.unusedCredit > 0) {
       notices.push(
-        `住民税の上限を超えた ${h.unusedCredit.toLocaleString()}円 は控除できません（切り捨て）。ふるさと納税の上限計算ではこの切れ分は使えません。`,
+        `住民税の上限を超えた ${formatInteger(h.unusedCredit)}円 は控除できません（切り捨て）。ふるさと納税の上限計算ではこの切れ分は使えません。`,
       );
     }
   }
@@ -188,7 +189,7 @@ export function calculateFurusatoLimit(rawForm: SimulatorFormState): Calculation
             businessIncomeRaw < 0
               ? "赤字のため損益通算対象"
               : income.blueSpecialDeduction > 0
-                ? `青色申告特別控除 ${income.blueSpecialDeduction.toLocaleString()}円適用`
+                ? `青色申告特別控除 ${formatInteger(income.blueSpecialDeduction)}円適用`
                 : undefined,
         },
         { label: "その他所得", amount: otherIncome },

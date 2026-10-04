@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/LegalPage";
 import { pageMetadata } from "@/lib/seo";
 import { SITE } from "@/lib/site";
@@ -98,12 +97,12 @@ export default function PrivacyPage() {
       <LegalSection title="11. お問い合わせ">
         <p>
           個人情報の取り扱いに関するお問い合わせは、
-          <Link
+          <a
             href="/contact"
             className="text-cedar-800 underline decoration-cedar-300 underline-offset-2 hover:text-cedar-950"
           >
             お問い合わせページ
-          </Link>
+          </a>
           をご利用ください。本名や自宅住所はお伺いしません。
         </p>
       </LegalSection>

@@ -17,11 +17,13 @@ import {
   deleteHistoryEntry,
   loadDraft,
   loadHistory,
+  MAX_HISTORY,
   recordHistory,
   saveDraft,
   type HistoryEntry,
 } from "@/lib/storage";
 import { defaultFormState, type SimulatorFormState } from "@/lib/types";
+import { useClientReady } from "@/lib/useClientReady";
 
 const STEPS = ["収入の種類", "控除の金額", "家族・住宅ローン", "結果"] as const;
 const FORM_TOP_ID = "simulator-form-top";
@@ -46,9 +48,10 @@ function scrollToSection(id: string) {
 }
 
 export function Simulator() {
+  const mounted = useClientReady();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<SimulatorFormState>(() => defaultFormState());
-  const [ready, setReady] = useState(false);
+  const [storageReady, setStorageReady] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const shouldScrollOnStep = useRef(false);
@@ -64,18 +67,19 @@ export function Simulator() {
   const isFirst = step === 0;
 
   useEffect(() => {
+    if (!mounted) return;
     const draft = loadDraft();
     if (draft) setForm(draft);
     const items = loadHistory();
     setHistory(items);
     setSelectedIds(items.slice(0, 1).map((item) => item.id));
-    setReady(true);
-  }, []);
+    setStorageReady(true);
+  }, [mounted]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!storageReady) return;
     saveDraft(form);
-  }, [form, ready]);
+  }, [form, storageReady]);
 
   useEffect(() => {
     if (!shouldScrollOnStep.current) return;
@@ -97,6 +101,10 @@ export function Simulator() {
     };
   }, [step]);
 
+  if (!mounted || !storageReady) {
+    return <SimulatorPlaceholder />;
+  }
+
   function moveToStep(next: number) {
     shouldScrollOnStep.current = true;
     setStep(next);
@@ -106,7 +114,7 @@ export function Simulator() {
     const items = recordHistory(form, result);
     setHistory(items);
     setSelectedIds((ids) => {
-      const keep = ids.filter((id) => items.some((item) => item.id === id)).slice(0, 2);
+      const keep = ids.filter((id) => items.some((item) => item.id === id)).slice(0, MAX_HISTORY);
       if (keep.length > 0) return keep;
       return items.slice(0, 1).map((item) => item.id);
     });
@@ -129,7 +137,7 @@ export function Simulator() {
   function toggleSelect(id: string) {
     setSelectedIds((ids) => {
       if (ids.includes(id)) return ids.filter((x) => x !== id);
-      return [...ids, id].slice(-2);
+      return [...ids, id].slice(-MAX_HISTORY);
     });
   }
 
@@ -146,9 +154,9 @@ export function Simulator() {
 
   const historyPanel = (
     <HistoryPanel
-      entries={ready ? history : []}
-      current={ready && step === 3 ? result : undefined}
-      selectedIds={ready ? selectedIds : []}
+      entries={history}
+      current={step === 3 ? result : undefined}
+      selectedIds={selectedIds}
       onToggleSelect={toggleSelect}
       onRestore={restoreEntry}
       onDelete={removeEntry}
@@ -244,7 +252,7 @@ export function Simulator() {
                 入力を見直す
               </button>
             )}
-            {step < 3 ? (
+            {step === STEPS.length - 2 ? (
               <button type="button" onClick={openResult} className="btn-accent">
                 結果を見る
               </button>
@@ -253,6 +261,33 @@ export function Simulator() {
         </div>
         </form>
       </div>
+      </section>
+    </div>
+  );
+}
+
+export function SimulatorPlaceholder() {
+  return (
+    <div className="w-full min-w-0 space-y-8" suppressHydrationWarning>
+      <section
+        id="simulator"
+        className="min-w-0 scroll-mt-24 space-y-4"
+        aria-labelledby="limit-sim-heading"
+        suppressHydrationWarning
+      >
+        <div className="min-w-0 space-y-2" suppressHydrationWarning>
+          <h2 id="limit-sim-heading" className="font-display text-2xl text-ink-950 sm:text-3xl" suppressHydrationWarning>
+            控除上限額・限度額を計算する
+          </h2>
+          <p className="text-sm leading-7 text-ink-600" suppressHydrationWarning>
+            年収の早見表ではなく、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
+          </p>
+        </div>
+        <div className="card min-h-[16rem] scroll-mt-24" suppressHydrationWarning>
+          <p className="text-sm leading-7 text-ink-500" suppressHydrationWarning>
+            読み込み中…
+          </p>
+        </div>
       </section>
     </div>
   );

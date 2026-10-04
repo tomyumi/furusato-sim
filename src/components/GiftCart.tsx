@@ -32,6 +32,7 @@ import {
   deleteWishlist,
   type GiftWishlist,
 } from "@/lib/storage";
+import { useClientReady } from "@/lib/useClientReady";
 
 interface GiftCartProps {
   limit: number;
@@ -54,6 +55,7 @@ function stepTabClass(kind: "current" | "done" | "idle") {
 }
 
 export function GiftCart({ limit }: GiftCartProps) {
+  const mounted = useClientReady();
   const [items, setItems] = useState<GiftCartItem[]>([]);
   const [adjust, setAdjust] = useState<OptionalNumber>("");
   const [wishlists, setWishlists] = useState<GiftWishlist[]>([]);
@@ -63,18 +65,32 @@ export function GiftCart({ limit }: GiftCartProps) {
   const [groupId, setGroupId] = useState("beef");
   const [leafId, setLeafId] = useState<string | null>(null);
   const [pickerAmount, setPickerAmount] = useState<number | undefined>(undefined);
+  const [flashAmount, setFlashAmount] = useState<number | undefined>(undefined);
+  const [flashToken, setFlashToken] = useState(0);
   const [pickerStep, setPickerStep] = useState<PickerStep>(1);
   const [leafTouched, setLeafTouched] = useState(false);
   const remainCardRef = useRef<HTMLDivElement>(null);
   const compactBarRef = useRef<HTMLDivElement>(null);
-  const [portalReady, setPortalReady] = useState(false);
+  const [storageReady, setStorageReady] = useState(false);
 
   useEffect(() => {
+    if (!mounted) return;
     setItems(loadGiftCart());
     setAdjust(loadCartAdjustment());
     setWishlists(loadWishlists());
-    setPortalReady(true);
-  }, []);
+    setStorageReady(true);
+  }, [mounted]);
+
+  useEffect(() => {
+    if (flashAmount == null) return;
+    const timer = window.setTimeout(() => setFlashAmount(undefined), 800);
+    return () => window.clearTimeout(timer);
+  }, [flashAmount, flashToken]);
+
+  function pulseAmount(amount: number) {
+    setFlashAmount(amount);
+    setFlashToken((n) => n + 1);
+  }
 
   useEffect(() => {
     function applyBottomBarOffset() {
@@ -96,7 +112,7 @@ export function GiftCart({ limit }: GiftCartProps) {
       document.documentElement.style.removeProperty("--gift-bottom-bar");
       document.documentElement.style.removeProperty("--gift-sticky-offset");
     };
-  }, [portalReady]);
+  }, [storageReady]);
 
   function persist(next: GiftCartItem[] | ((prev: GiftCartItem[]) => GiftCartItem[])) {
     setItems((prev) => {
@@ -148,6 +164,7 @@ export function GiftCart({ limit }: GiftCartProps) {
       leafId,
       amount,
       qty: matched?.qty ?? 1,
+      purchased: matched?.purchased === true,
     } satisfies GiftCartItem;
   }, [pickerAmount, genreId, groupId, leafId, items, cartOffers]);
 
@@ -181,6 +198,8 @@ export function GiftCart({ limit }: GiftCartProps) {
 
   function selectGenre(id: string) {
     const next = findGenre(id);
+    setFlashAmount(undefined);
+    setPickerAmount(undefined);
     setGenreId(id);
     setGroupId(next?.groups[0]?.id ?? "");
     setLeafId(null);
@@ -189,6 +208,8 @@ export function GiftCart({ limit }: GiftCartProps) {
   }
 
   function selectGroup(id: string) {
+    setFlashAmount(undefined);
+    setPickerAmount(undefined);
     setGroupId(id);
     setLeafId(null);
     setLeafTouched(false);
@@ -196,6 +217,8 @@ export function GiftCart({ limit }: GiftCartProps) {
   }
 
   function selectLeaf(id: string | null) {
+    setFlashAmount(undefined);
+    setPickerAmount(undefined);
     setLeafId(id);
     setLeafTouched(true);
     setPickerStep(3);
@@ -204,6 +227,7 @@ export function GiftCart({ limit }: GiftCartProps) {
   function addAmount(amount: number) {
     if (!groupId) return;
     setPickerAmount(amount);
+    pulseAmount(amount);
     persist((prev) => {
       const existing = prev.find(
         (item) =>
@@ -224,6 +248,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           leafId,
           amount,
           qty: 1,
+          purchased: false,
         },
       ];
     });
@@ -243,6 +268,17 @@ export function GiftCart({ limit }: GiftCartProps) {
 
   function removeItem(id: string) {
     persist((prev) => prev.filter((item) => item.id !== id));
+  }
+
+  function setPurchased(id: string, purchased: boolean) {
+    persist((prev) => prev.map((item) => (item.id === id ? { ...item, purchased } : item)));
+  }
+
+  function setPurchasedByPinpoint(target: GiftCartItem, purchased: boolean) {
+    const key = pinpointKey(target);
+    persist((prev) =>
+      prev.map((item) => (pinpointKey(item) === key ? { ...item, purchased } : item)),
+    );
   }
 
   function focusCartItem(item: GiftCartItem) {
@@ -292,6 +328,18 @@ export function GiftCart({ limit }: GiftCartProps) {
       : cap <= 0
         ? ""
         : "この金額までなら、自己負担およそ2,000円で寄付できます。";
+
+  if (!mounted || !storageReady) {
+    return (
+      <section data-pdf-hide className="gift-selector min-w-0 space-y-6 p-6 sm:p-8" aria-label="マイ返礼品セレクター">
+        <header className="min-w-0 pt-1">
+          <p className="kicker">GIFT SELECTOR</p>
+          <h3 className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl">マイ返礼品セレクター</h3>
+        </header>
+        <p className="text-sm leading-7 text-ink-500">読み込み中…</p>
+      </section>
+    );
+  }
 
   const compactBarNode = (
     <div
@@ -402,7 +450,7 @@ export function GiftCart({ limit }: GiftCartProps) {
         </p>
       </div>
 
-      {portalReady ? createPortal(compactBarNode, document.body) : null}
+      {createPortal(compactBarNode, document.body)}
 
       <p className="text-center text-sm leading-7 text-ink-600">
         💡 お好みの条件を選ぶと、各ポータルサイトの検索ページに連動します
@@ -531,7 +579,8 @@ export function GiftCart({ limit }: GiftCartProps) {
             <button
               key={amount}
               type="button"
-              className={amountClass(pickerAmount === amount)}
+              className={amountClass(flashAmount === amount)}
+              aria-pressed={flashAmount === amount}
               onClick={() => addAmount(amount)}
             >
               {formatYen(amount)}
@@ -546,6 +595,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           label="申込時の増減額"
           value={adjust}
           onChange={persistAdjust}
+          allowNegative
           hint="カートの単価や個数はそのままです。実際の申し込み金額との差額を入力します。プラスでカート合計が増え、マイナスで減ります。空欄は0円です。"
         />
         <div className="mt-3 flex flex-wrap gap-2">
@@ -593,10 +643,26 @@ export function GiftCart({ limit }: GiftCartProps) {
           </p>
         ) : (
           <ul className="divide-y divide-ink-100 px-4 sm:px-5">
-            {items.map((item) => (
-              <li key={item.id} className="gift-cart-line">
+            {items.map((item) => {
+              const bought = item.purchased === true;
+              return (
+              <li
+                key={item.id}
+                className={`gift-cart-line ${bought ? "gift-cart-line-bought" : ""}`}
+              >
+                <label className="flex shrink-0 cursor-pointer items-center pt-0.5">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 shrink-0 rounded border-ink-300"
+                    checked={bought}
+                    onChange={(event) => setPurchased(item.id, event.target.checked)}
+                    aria-label={`${itemLabel(item)}を購入済みにする`}
+                  />
+                </label>
                 <button type="button" className="min-w-0 flex-1 text-left" onClick={() => focusCartItem(item)}>
-                  <p className="truncate text-sm font-medium leading-6 text-ink-900">{itemLabel(item)}</p>
+                  <p className="gift-cart-label truncate text-sm font-medium leading-6 text-ink-900">
+                    {itemLabel(item)}
+                  </p>
                   <p className="text-xs leading-5 tabular-nums text-ink-500">
                     {formatYen(item.amount)} × {item.qty}
                   </p>
@@ -630,7 +696,8 @@ export function GiftCart({ limit }: GiftCartProps) {
                   </button>
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </div>
@@ -646,17 +713,24 @@ export function GiftCart({ limit }: GiftCartProps) {
               <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {cartOffers.map((offer) => {
                   const active = pinpointKey(offer) === pinpointKey(activeOffer);
+                  const bought = offer.purchased === true;
                   return (
-                    <button
+                    <div
                       key={pinpointKey(offer)}
-                      type="button"
-                      aria-pressed={active}
-                      className={active ? "gift-offer-tab gift-offer-tab-on" : "gift-offer-tab"}
-                      onClick={() => focusCartItem(offer)}
+                      className={`${active ? "gift-offer-tab gift-offer-tab-on" : "gift-offer-tab"} ${
+                        bought ? "gift-offer-tab-bought" : ""
+                      }`}
                     >
                       <span className="absolute inset-y-0 left-0 w-1.5 bg-cedar-400" aria-hidden />
-                      <span className="min-w-0 flex-1 pl-2">
-                        <span className="block text-sm font-semibold leading-6">{itemLabel(offer)}</span>
+                      <button
+                        type="button"
+                        aria-pressed={active}
+                        className="min-w-0 flex-1 pl-2 text-left"
+                        onClick={() => focusCartItem(offer)}
+                      >
+                        <span className="gift-cart-label block text-sm font-semibold leading-6">
+                          {itemLabel(offer)}
+                        </span>
                         <span
                           className={`mt-0.5 block text-xs tabular-nums ${
                             active ? "text-cedar-200" : "text-ink-500"
@@ -664,9 +738,20 @@ export function GiftCart({ limit }: GiftCartProps) {
                         >
                           {formatYen(offer.amount)} × {offer.qty}
                         </span>
-                      </span>
-                      {active ? <span className="gift-offer-badge">選択中</span> : null}
-                    </button>
+                      </button>
+                      <div className="flex shrink-0 flex-col items-end gap-1.5">
+                        {active ? <span className="gift-offer-badge">選択中</span> : null}
+                        <label className="flex cursor-pointer items-center">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 shrink-0 rounded border-ink-300"
+                            checked={bought}
+                            onChange={(event) => setPurchasedByPinpoint(offer, event.target.checked)}
+                            aria-label={`${itemLabel(offer)}を購入済みにする`}
+                          />
+                        </label>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
@@ -695,7 +780,6 @@ export function GiftCart({ limit }: GiftCartProps) {
           <input
             type="text"
             value={wishName}
-            suppressHydrationWarning
             onChange={(event) => setWishName(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
@@ -735,6 +819,7 @@ export function GiftCart({ limit }: GiftCartProps) {
                       {entry.items.map((item) => (
                         <li key={item.id}>
                           {itemLabel(item)} {formatYen(item.amount)} × {item.qty}
+                          {item.purchased ? "（購入済み）" : ""}
                         </li>
                       ))}
                     </ul>

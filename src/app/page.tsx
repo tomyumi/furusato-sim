@@ -1,7 +1,8 @@
+import { ClientOnly } from "@/components/ClientOnly";
 import { HomeEditorial } from "@/components/HomeEditorial";
 import { JsonLd } from "@/components/JsonLd";
 import { ScopeNotice } from "@/components/ScopeNotice";
-import { Simulator } from "@/components/Simulator";
+import { Simulator, SimulatorPlaceholder } from "@/components/Simulator";
 import { HOME_FAQS } from "@/lib/guides";
 import { getSiteUrl, pageMetadata, SEO } from "@/lib/seo";
 import { SITE } from "@/lib/site";
@@ -60,7 +61,9 @@ export default function HomePage() {
         </p>
         <ScopeNotice />
       </div>
-      <Simulator />
+      <ClientOnly fallback={<SimulatorPlaceholder />}>
+        <Simulator />
+      </ClientOnly>
       <HomeEditorial />
     </main>
   );

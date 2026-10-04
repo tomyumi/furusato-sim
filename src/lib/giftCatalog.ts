@@ -274,6 +274,7 @@ export interface GiftCartItem {
   leafId: string | null;
   amount: number;
   qty: number;
+  purchased?: boolean;
 }
 
 export function findGenre(id: string) {
@@ -346,9 +347,13 @@ export function uniquePinpoints(items: GiftCartItem[]): GiftCartItem[] {
     const key = pinpointKey(item);
     const prev = seen.get(key);
     if (!prev) {
-      seen.set(key, { ...item });
+      seen.set(key, { ...item, purchased: item.purchased === true });
     } else {
-      seen.set(key, { ...prev, qty: prev.qty + item.qty });
+      seen.set(key, {
+        ...prev,
+        qty: prev.qty + item.qty,
+        purchased: prev.purchased === true && item.purchased === true,
+      });
     }
   }
   return [...seen.values()];
@@ -433,4 +438,8 @@ export function isValidCartItem(item: GiftCartItem): boolean {
   if (!Number.isFinite(item.amount) || item.amount <= 0) return false;
   if (!Number.isFinite(item.qty) || item.qty <= 0) return false;
   return typeof item.id === "string" && item.id.length > 0;
+}
+
+export function normalizeCartItem(item: GiftCartItem): GiftCartItem {
+  return { ...item, purchased: item.purchased === true };
 }

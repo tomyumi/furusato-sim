@@ -80,7 +80,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        <div className="flex min-h-screen flex-col" suppressHydrationWarning>
+        <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <ClientShell>{children}</ClientShell>
           <SiteFooter />

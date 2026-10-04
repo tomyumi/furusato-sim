@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { GUIDES } from "@/lib/guides";
 import { pageMetadata } from "@/lib/seo";
 
@@ -18,9 +17,9 @@ export default function GuidesIndexPage() {
       </h1>
       <p className="lede mt-4 max-w-2xl">
         控除上限額のしくみ、限度額の計算、申告の選び方、返礼品、年末の期限まで、検索で調べた人が一通り読み切れる分量でまとめています。自分の枠を計算するには
-        <Link href="/#simulator" className="mx-1 font-medium text-cedar-800 no-underline hover:underline">
+        <a href="/#simulator" className="mx-1 font-medium text-cedar-800 no-underline hover:underline">
           控除上限額シミュレーション
-        </Link>
+        </a>
         をご利用ください。
       </p>
       <ul className="mt-10 space-y-5">
@@ -28,9 +27,9 @@ export default function GuidesIndexPage() {
           <li key={guide.slug} className="card p-6 sm:p-7">
             <p className="text-xs font-semibold tracking-[0.18em] text-cedar-700">{guide.category}</p>
             <h2 className="mt-2 font-display text-xl leading-snug text-ink-950">
-              <Link href={guide.href} className="text-ink-950 no-underline hover:text-cedar-800">
+              <a href={guide.href} className="text-ink-950 no-underline hover:text-cedar-800">
                 {guide.title}
-              </Link>
+              </a>
             </h2>
             <p className="mt-3 text-sm leading-7 text-ink-600">{guide.excerpt}</p>
           </li>

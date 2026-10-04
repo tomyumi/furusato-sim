@@ -1,4 +1,4 @@
-import { cartTotal, isValidCartItem, type GiftCartItem } from "@/lib/giftCatalog";
+import { cartTotal, isValidCartItem, normalizeCartItem, type GiftCartItem } from "@/lib/giftCatalog";
 import {
   defaultFilingAdvisorAnswers,
   type FilingAdvisorAnswers,
@@ -14,7 +14,7 @@ const CART_KEY = "furusato-sim-cart-v1";
 const CART_ADJUST_KEY = "furusato-sim-cart-adjust-v1";
 const WISHLIST_KEY = "furusato-sim-wishlist-v1";
 const FILING_ADVICE_KEY = "furusato-sim-filing-advice-v1";
-export const MAX_HISTORY = 12;
+export const MAX_HISTORY = 3;
 export const MAX_WISHLISTS = 20;
 
 export interface HistorySnapshot {
@@ -80,7 +80,11 @@ export function saveDraft(form: SimulatorFormState) {
 export function loadHistory(): HistoryEntry[] {
   const items = readJson<HistoryEntry[]>(HISTORY_KEY, []);
   if (!Array.isArray(items)) return [];
-  return items.filter((item) => item && item.id && item.form && item.snapshot);
+  const valid = items.filter((item) => item && item.id && item.form && item.snapshot);
+  if (valid.length > MAX_HISTORY) {
+    return persistHistory(valid.slice(0, MAX_HISTORY));
+  }
+  return valid;
 }
 
 function persistHistory(items: HistoryEntry[]) {
@@ -141,7 +145,7 @@ export function clearHistory(): HistoryEntry[] {
 export function loadGiftCart(): GiftCartItem[] {
   const items = readJson<GiftCartItem[]>(CART_KEY, []);
   if (!Array.isArray(items)) return [];
-  return items.filter(isValidCartItem);
+  return items.filter(isValidCartItem).map(normalizeCartItem);
 }
 
 export function saveGiftCart(items: GiftCartItem[]) {
@@ -168,7 +172,7 @@ export interface GiftWishlist {
 }
 
 function cloneCartItems(items: GiftCartItem[]): GiftCartItem[] {
-  return items.filter(isValidCartItem).map((item) => ({ ...item }));
+  return items.filter(isValidCartItem).map((item) => normalizeCartItem({ ...item }));
 }
 
 export function loadWishlists(): GiftWishlist[] {

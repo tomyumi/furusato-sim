@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { GUIDES } from "@/lib/guides";
 
@@ -17,17 +16,17 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
       <nav aria-label="パンくずリスト" className="text-sm text-ink-500">
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <Link href="/" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/" className="text-ink-600 no-underline hover:text-cedar-800">
               控除上限額シミュレーション
-            </Link>
+            </a>
           </li>
           <li aria-hidden className="text-ink-400">
             /
           </li>
           <li>
-            <Link href="/guides" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/guides" className="text-ink-600 no-underline hover:text-cedar-800">
               限度額の解説コラム
-            </Link>
+            </a>
           </li>
         </ol>
       </nav>
@@ -40,9 +39,9 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
       <article className="card mt-10 space-y-8 text-[15px] leading-8 text-ink-800">{children}</article>
       <aside className="card-gold mt-10 text-sm leading-7 text-cedar-950">
         ふるさと納税の控除上限額・限度額の計算は
-        <Link href="/#simulator" className="mx-1 font-semibold text-ink-950 no-underline hover:underline">
+        <a href="/#simulator" className="mx-1 font-semibold text-ink-950 no-underline hover:underline">
           控除上限額シミュレーション
-        </Link>
+        </a>
         で確認できます。正確な税額は管轄の税務署・自治体へご確認ください。
       </aside>
       <section className="mt-12">
@@ -50,12 +49,12 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
         <ul className="mt-4 space-y-3">
           {related.map((guide) => (
             <li key={guide.slug}>
-              <Link
+              <a
                 href={guide.href}
                 className="text-sm font-medium text-cedar-800 no-underline hover:text-cedar-950"
               >
                 {guide.title}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>

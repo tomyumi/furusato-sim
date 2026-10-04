@@ -2,11 +2,13 @@
 
 import { FormEvent, useState } from "react";
 import { hasContactEmail, SITE } from "@/lib/site";
+import { useClientReady } from "@/lib/useClientReady";
 
 const fieldClass =
   "mt-2 w-full rounded-md border border-ink-200 bg-white px-3.5 py-2.5 text-sm text-ink-950 outline-none transition focus:border-cedar-400 focus:ring-2 focus:ring-cedar-200/70";
 
 export function ContactForm() {
+  const mounted = useClientReady();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -44,6 +46,21 @@ export function ContactForm() {
     setReceipt(id);
   }
 
+  if (!mounted) {
+    return (
+      <div
+        className="card-muted space-y-5"
+        aria-busy="true"
+        aria-label="お問い合わせフォーム"
+        suppressHydrationWarning
+      >
+        <p className="text-sm leading-7 text-ink-500" suppressHydrationWarning>
+          読み込み中…
+        </p>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="card-muted space-y-5">
       <div>
@@ -55,7 +72,6 @@ export function ContactForm() {
           name="name"
           autoComplete="nickname"
           value={name}
-          suppressHydrationWarning
           onChange={(e) => setName(e.target.value)}
           className={fieldClass}
         />
@@ -70,7 +86,6 @@ export function ContactForm() {
           type="email"
           autoComplete="email"
           value={email}
-          suppressHydrationWarning
           onChange={(e) => setEmail(e.target.value)}
           className={fieldClass}
         />
@@ -84,7 +99,6 @@ export function ContactForm() {
           name="message"
           rows={6}
           value={message}
-          suppressHydrationWarning
           onChange={(e) => setMessage(e.target.value)}
           className={`${fieldClass} resize-y`}
         />

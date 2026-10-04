@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -14,17 +13,17 @@ export function LegalPage({ title, lead, children }: Props) {
       <nav aria-label="パンくずリスト" className="mt-4 text-sm">
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <Link href="/" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/" className="text-ink-600 no-underline hover:text-cedar-800">
               控除上限額シミュレーション
-            </Link>
+            </a>
           </li>
           <li className="text-ink-400" aria-hidden>
             ／
           </li>
           <li>
-            <Link href="/guides" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/guides" className="text-ink-600 no-underline hover:text-cedar-800">
               限度額の解説コラム
-            </Link>
+            </a>
           </li>
         </ol>
       </nav>

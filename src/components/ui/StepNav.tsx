@@ -17,7 +17,6 @@ export function StepNav({ steps, current, onSelect }: StepNavProps) {
             <li key={label} className="min-w-0">
               <button
                 type="button"
-                suppressHydrationWarning
                 onClick={() => onSelect(i)}
                 className={`flex w-full min-w-0 items-start gap-2.5 overflow-visible rounded-md px-3.5 py-3 text-left text-sm leading-5 transition duration-200 ${
                   active
