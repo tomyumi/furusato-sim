@@ -72,7 +72,7 @@ input[type="number"] {
 
 @layer components {
   .page-shell {
-    @apply mx-auto w-full max-w-4xl overflow-x-visible px-5 py-10 sm:px-8 sm:py-14;
+    @apply mx-auto w-full max-w-4xl overflow-x-visible px-3 py-8 md:px-6 md:py-12 lg:px-8 lg:py-14;
   }
 
   .kicker {
@@ -88,7 +88,7 @@ input[type="number"] {
   }
 
   .faq-fold-summary {
-    @apply flex w-full cursor-pointer list-none items-start justify-between gap-3 px-5 py-4 text-left text-sm font-semibold leading-6 text-ink-950;
+    @apply flex w-full cursor-pointer list-none items-start justify-between gap-3 px-4 py-4 text-left text-sm font-semibold leading-6 text-ink-950;
   }
 
   .faq-fold-summary::-webkit-details-marker {
@@ -104,19 +104,19 @@ input[type="number"] {
   }
 
   .faq-fold-panel {
-    @apply min-w-0 border-t border-cedar-200 px-5 pb-5 pt-4;
+    @apply min-w-0 border-t border-cedar-200 px-4 pb-5 pt-4;
   }
 
   .card {
-    @apply min-w-0 overflow-visible rounded-xl border border-ink-100 bg-white p-6 shadow-md sm:p-8;
+    @apply min-w-0 overflow-visible rounded-xl border border-ink-100 bg-white p-4 shadow-md md:p-6 lg:p-8;
   }
 
   .card-muted {
-    @apply min-w-0 overflow-visible rounded-xl border border-ink-100 bg-ink-50 p-5 sm:p-6;
+    @apply min-w-0 overflow-visible rounded-xl border border-ink-100 bg-ink-50 p-4 md:p-5 lg:p-6;
   }
 
   .card-gold {
-    @apply min-w-0 overflow-visible rounded-xl border border-cedar-200 p-5 sm:p-6;
+    @apply min-w-0 overflow-visible rounded-xl border border-cedar-200 p-4 md:p-5 lg:p-6;
     background-color: #fbf8f3;
   }
 

@@ -11,7 +11,7 @@ const LINKS = [
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-ink-100 bg-ink-950 text-ink-200">
-      <div className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8">
+      <div className="mx-auto w-full max-w-4xl px-3 py-10 md:px-6 md:py-12 lg:px-8">
         <p className="kicker text-cedar-300">FURUSATO LAB</p>
         <p className="mt-3 max-w-xl text-sm leading-7 text-ink-300">
           副業・個人事業主・住宅ローン控除に対応した、ふるさと納税の控除上限額シミュレーターです。本業と副業の合算、青色申告の事業所得、住宅ローン控除の住民税への振替を含めた限度額の目安を計算します。税務アドバイスではありません。最新の法令と各自治体の案内を優先してください。
