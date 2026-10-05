@@ -31,7 +31,7 @@ export default function GuidesIndexPage() {
                 {guide.title}
               </a>
             </h2>
-            <p className="mt-3 text-sm leading-7 text-ink-600">{guide.excerpt}</p>
+            <p className="mt-3 text-sm leading-8 text-ink-800">{guide.excerpt}</p>
           </li>
         ))}
       </ul>

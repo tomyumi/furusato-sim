@@ -44,7 +44,7 @@ export function DeductionsStep({
     <section className="space-y-6">
       <header className="space-y-2">
         <h3 className="font-display text-2xl text-ink-950">控除の金額を書き写す</h3>
-        <p className="text-sm leading-7 text-ink-600">
+        <p className="section-copy">
           空欄の項目は0円として扱います。源泉徴収票に書いてある数字だけ入力してください。
         </p>
       </header>

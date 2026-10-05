@@ -336,7 +336,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           <p className="kicker">GIFT SELECTOR</p>
           <h3 className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl">マイ返礼品セレクター</h3>
         </header>
-        <p className="text-sm leading-7 text-ink-500">読み込み中…</p>
+        <p className="section-copy">読み込み中…</p>
       </section>
     );
   }
@@ -452,7 +452,7 @@ export function GiftCart({ limit }: GiftCartProps) {
 
       {createPortal(compactBarNode, document.body)}
 
-      <p className="text-center text-sm leading-7 text-ink-600">
+      <p className="section-copy text-center">
         💡 お好みの条件を選ぶと、各ポータルサイトの検索ページに連動します
       </p>
 
@@ -536,7 +536,7 @@ export function GiftCart({ limit }: GiftCartProps) {
             </span>
             <p className="text-sm font-semibold tracking-wide text-ink-800">くわしく（こだわり）</p>
           </div>
-          <p className="mb-3 text-xs leading-6 text-ink-500">
+          <p className="field-hint mb-3">
             未選択なら「{group?.name ?? "この種類"}」全般で検索します。押すほどキーワードが具体的になります。
           </p>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
@@ -563,7 +563,7 @@ export function GiftCart({ limit }: GiftCartProps) {
             </span>
             <p className="text-sm font-semibold tracking-wide text-ink-800">くわしく</p>
           </div>
-          <p className="text-xs leading-6 text-ink-500">この種類は細かい条件なしで検索できます。次は金額を選んでください。</p>
+          <p className="field-hint">この種類は細かい条件なしで検索できます。次は金額を選んでください。</p>
         </div>
       )}
 
@@ -571,7 +571,7 @@ export function GiftCart({ limit }: GiftCartProps) {
         <p className="text-sm font-semibold tracking-wide text-ink-800">
           {itemLabel({ genreId, groupId, leafId })} に加算する金額
         </p>
-        <p className="mt-1 text-xs leading-6 text-ink-500">
+        <p className="field-hint mt-1">
           残りの枠 {formatYen(remaining)} を目安に、ワンタップでカートへ追加します。
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
@@ -638,7 +638,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           ) : null}
         </div>
         {items.length === 0 ? (
-          <p className="px-4 py-4 text-sm leading-6 text-ink-500 sm:px-5">
+          <p className="section-copy px-4 py-4 sm:px-5">
             上の金額ボタンを押すと、ここに割り振りが入ります。数量は − ／ ＋ でその場で変えられます。
           </p>
         ) : (
@@ -663,7 +663,7 @@ export function GiftCart({ limit }: GiftCartProps) {
                   <p className="gift-cart-label truncate text-sm font-medium leading-6 text-ink-900">
                     {itemLabel(item)}
                   </p>
-                  <p className="text-xs leading-5 tabular-nums text-ink-500">
+                  <p className="text-xs leading-6 tabular-nums text-ink-700">
                     {formatYen(item.amount)} × {item.qty}
                   </p>
                 </button>
@@ -707,7 +707,7 @@ export function GiftCart({ limit }: GiftCartProps) {
           {cartOffers.length > 0 ? (
             <div>
               <p className="text-sm font-semibold tracking-wide text-ink-800">カートの内訳から探す</p>
-              <p className="mt-1 text-sm leading-7 text-ink-600">
+              <p className="section-copy mt-1">
                 上のカードをクリックすると、下の各ポータルサイトの検索条件が切り替わります。
               </p>
               <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
@@ -766,14 +766,14 @@ export function GiftCart({ limit }: GiftCartProps) {
           />
         </div>
       ) : (
-        <p className="text-xs leading-5 text-ink-500">
+        <p className="field-hint">
           種類と金額を選ぶと、その条件に合わせた各サイトの検索ボタンがここに現れます。
         </p>
       )}
 
       <div className="min-w-0 rounded-xl border border-ink-100 bg-white p-5">
         <p className="text-base font-semibold leading-6 text-ink-900">お気に入り</p>
-        <p className="mt-1 text-sm leading-6 text-ink-500">
+        <p className="section-copy mt-1">
           いまのカート内訳と合計を、名前をつけて保存できます。
         </p>
         <div className="mt-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
@@ -804,7 +804,7 @@ export function GiftCart({ limit }: GiftCartProps) {
         {wishMessage ? <p className="mt-2 text-xs leading-5 text-mist-800">{wishMessage}</p> : null}
 
         {wishlists.length === 0 ? (
-          <p className="mt-3 text-xs leading-5 text-ink-500">保存した組み合わせはまだありません。</p>
+          <p className="field-hint mt-3">保存した組み合わせはまだありません。</p>
         ) : (
           <ul className="mt-3 divide-y divide-ink-100">
             {wishlists.map((entry) => (
@@ -812,10 +812,10 @@ export function GiftCart({ limit }: GiftCartProps) {
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <p className="text-sm font-medium leading-6 text-ink-900">{entry.name}</p>
-                    <p className="text-xs leading-5 tabular-nums text-ink-500">
+                    <p className="field-hint tabular-nums">
                       合計 {formatYen(entry.total)} ・ {formatSavedAt(entry.savedAt)}
                     </p>
-                    <ul className="mt-1 space-y-0.5 text-xs leading-5 text-ink-600">
+                    <ul className="field-hint mt-1 space-y-1">
                       {entry.items.map((item) => (
                         <li key={item.id}>
                           {itemLabel(item)} {formatYen(item.amount)} × {item.qty}

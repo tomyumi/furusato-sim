@@ -13,10 +13,10 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
 
   return (
     <main className="page-shell">
-      <nav aria-label="パンくずリスト" className="text-sm text-ink-500">
+      <nav aria-label="パンくずリスト" className="text-sm text-ink-700">
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <a href="/" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/" className="text-ink-800 no-underline hover:text-cedar-800">
               控除上限額シミュレーション
             </a>
           </li>
@@ -24,7 +24,7 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
             /
           </li>
           <li>
-            <a href="/guides" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/guides" className="text-ink-800 no-underline hover:text-cedar-800">
               限度額の解説コラム
             </a>
           </li>
@@ -33,11 +33,11 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
       <p className="mt-8 kicker">GUIDE</p>
       <h1 className="mt-3 font-display text-3xl text-ink-950 sm:text-4xl">{title}</h1>
       <p className="lede mt-4 max-w-2xl">{lead}</p>
-      <p className="mt-3 text-xs tracking-wide text-ink-400">
+      <p className="field-hint mt-3 tracking-wide">
         最終更新：2026年10月　／　一般的な制度の解説（税務相談ではありません）
       </p>
-      <article className="card mt-10 space-y-8 text-[15px] leading-8 text-ink-800">{children}</article>
-      <aside className="card-gold mt-10 text-sm leading-7 text-cedar-950">
+      <article className="card mt-10 space-y-8 text-[15px] leading-9 text-ink-800">{children}</article>
+      <aside className="card-gold mt-10 text-sm leading-8 text-cedar-950">
         ふるさと納税の控除上限額・限度額の計算は
         <a href="/#simulator" className="mx-1 font-semibold text-ink-950 no-underline hover:underline">
           控除上限額シミュレーション

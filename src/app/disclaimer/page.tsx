@@ -45,26 +45,26 @@ export default function DisclaimerPage() {
         </p>
         <dl className="divide-y divide-ink-100 rounded-xl border border-ink-200 bg-white/70">
           <div className="grid gap-1 px-4 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt className="text-ink-500">サイト名</dt>
+            <dt className="text-ink-700">サイト名</dt>
             <dd>{SITE.name}</dd>
           </div>
           <div className="grid gap-1 px-4 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt className="text-ink-500">運営形態</dt>
+            <dt className="text-ink-700">運営形態</dt>
             <dd>{SITE.operatorType}</dd>
           </div>
           <div className="grid gap-1 px-4 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt className="text-ink-500">運営者名</dt>
+            <dt className="text-ink-700">運営者名</dt>
             <dd>{SITE.operatorName}</dd>
           </div>
           <div className="grid gap-1 px-4 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt className="text-ink-500">所在地</dt>
+            <dt className="text-ink-700">所在地</dt>
             <dd>
               {SITE.operatorArea}
               <span className="mt-1 block text-ink-600">{SITE.operatorAddress}</span>
             </dd>
           </div>
           <div className="grid gap-1 px-4 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt className="text-ink-500">連絡先</dt>
+            <dt className="text-ink-700">連絡先</dt>
             <dd>
               <a
                 href={SITE.contactPath}

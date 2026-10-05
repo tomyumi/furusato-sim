@@ -53,8 +53,8 @@ function ChoiceRow({
 }) {
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-medium leading-6 text-ink-900">{question}</legend>
-      <p className="text-xs leading-5 text-ink-600">{hint}</p>
+      <legend className="text-sm font-medium leading-7 text-ink-900">{question}</legend>
+      <p className="field-hint">{hint}</p>
       <div className="flex flex-col gap-2 sm:flex-row">
         {QUESTION_OPTIONS.map((option) => {
           const selected = value === option.value;
@@ -118,7 +118,7 @@ export function FilingAdvisor({ form }: FilingAdvisorProps) {
           <p id="filing-advisor-heading" className="font-display text-lg text-ink-950">
             かんたん確認（2問）
           </p>
-          <p className="mt-2 text-sm leading-7 text-ink-500">読み込み中…</p>
+          <p className="section-copy mt-2">読み込み中…</p>
         </div>
       </section>
     );
@@ -128,7 +128,7 @@ export function FilingAdvisor({ form }: FilingAdvisorProps) {
     <section className="min-w-0 space-y-5" aria-labelledby="filing-advisor-heading">
       <div data-pdf-hide className="card">
         <p className="font-display text-lg text-ink-950">かんたん確認（2問）</p>
-        <p className="mt-2 text-sm leading-7 text-ink-600">
+        <p className="section-copy mt-2">
           シミュレーションの入力に加えて、手続きの分かれ目になる点だけ聞きます。回答はこのブラウザに保存されます。
         </p>
         <div className="mt-6 space-y-6">
@@ -163,18 +163,18 @@ export function FilingAdvisor({ form }: FilingAdvisorProps) {
           {advice.checks.map((check) => (
             <li
               key={check.id}
-              className="min-w-0 rounded-lg border border-ink-100 bg-ink-50/80 px-3 py-2 text-sm leading-6"
+              className="min-w-0 rounded-lg border border-ink-100 bg-ink-50/80 px-3 py-3 text-sm leading-7"
             >
               <p className="font-medium text-ink-900">
                 <span className="mr-2 tabular-nums">{statusMark(check.status)}</span>
                 {check.label}
               </p>
-              <p className="mt-0.5 text-xs leading-5 text-ink-600">{check.note}</p>
+              <p className="field-hint mt-1">{check.note}</p>
             </li>
           ))}
         </ul>
         {advice.allReasons.length > 0 ? (
-          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-ink-800">
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-8 text-ink-800">
             {advice.allReasons.map((reason) => (
               <li key={reason.id} className="min-w-0">
                 <span className="font-medium">{reason.title}</span>
@@ -249,15 +249,15 @@ function ProcedureCard({
         {title}
         {emphasized ? <span className="ml-2 text-xs font-semibold tracking-wide text-cedar-800">おすすめ</span> : null}
       </p>
-      <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm leading-6 text-ink-800">
+      <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm leading-8 text-ink-800">
         {steps.map((step) => (
           <li key={step} className="min-w-0 break-words">
             {step}
           </li>
         ))}
       </ol>
-      <p className="mt-3 text-xs font-medium leading-5 text-ink-700">注意点</p>
-      <ul className="mt-1 list-disc space-y-1 pl-5 text-xs leading-5 text-ink-600">
+      <p className="mt-3 text-xs font-medium leading-7 text-ink-800">注意点</p>
+      <ul className="mt-1 list-disc space-y-2 pl-5 field-hint">
         {notes.map((note) => (
           <li key={note} className="min-w-0 break-words">
             {note}

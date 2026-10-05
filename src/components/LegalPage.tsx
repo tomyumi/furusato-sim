@@ -13,7 +13,7 @@ export function LegalPage({ title, lead, children }: Props) {
       <nav aria-label="パンくずリスト" className="mt-4 text-sm">
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <li>
-            <a href="/" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/" className="text-ink-800 no-underline hover:text-cedar-800">
               控除上限額シミュレーション
             </a>
           </li>
@@ -21,7 +21,7 @@ export function LegalPage({ title, lead, children }: Props) {
             ／
           </li>
           <li>
-            <a href="/guides" className="text-ink-600 no-underline hover:text-cedar-800">
+            <a href="/guides" className="text-ink-800 no-underline hover:text-cedar-800">
               限度額の解説コラム
             </a>
           </li>
@@ -29,7 +29,7 @@ export function LegalPage({ title, lead, children }: Props) {
       </nav>
       <h1 className="mt-6 font-display text-3xl text-ink-950 sm:text-4xl">{title}</h1>
       {lead ? <p className="lede mt-4 max-w-2xl">{lead}</p> : null}
-      <article className="card mt-10 space-y-8 text-[15px] leading-8 text-ink-800">{children}</article>
+      <article className="card mt-10 space-y-8 text-[15px] leading-9 text-ink-800">{children}</article>
     </main>
   );
 }

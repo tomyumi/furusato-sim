@@ -65,7 +65,7 @@ export function Accordion({
             {title}
           </span>
           {!shown && summary ? (
-            <span className="mt-1 block text-xs font-normal leading-6 text-ink-500">{summary}</span>
+            <span className="field-hint mt-1 block">{summary}</span>
           ) : null}
         </span>
         <span

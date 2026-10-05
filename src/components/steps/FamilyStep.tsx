@@ -75,13 +75,13 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
     <section className="space-y-6">
       <header className="space-y-2">
         <h3 className="font-display text-2xl text-ink-950">家族と住宅ローン</h3>
-        <p className="text-sm leading-7 text-ink-600">
+        <p className="section-copy">
           人数や金額は空欄のままでも構いません。未入力は0として計算します。
         </p>
       </header>
 
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-ink-800">控除対象配偶者</legend>
+        <legend className="text-sm font-medium leading-7 text-ink-900">控除対象配偶者</legend>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {SPOUSE_OPTIONS.map((option) => (
             <div
@@ -107,7 +107,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
           ))}
         </div>
         {value.spouseStatus === "none" ? (
-          <p className="text-xs leading-6 text-ink-500">
+          <p className="field-hint">
             「いない」のときは配偶者の所得入力は使いません。控除ありに切り替えると詳細を開けます。
           </p>
         ) : (
@@ -173,7 +173,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
       </Accordion>
 
       <div className="card-muted space-y-4">
-        <label className="flex items-start gap-3 text-sm font-medium leading-6 text-ink-800">
+        <label className="flex items-start gap-3 text-sm font-medium leading-7 text-ink-900">
           <input
             type="checkbox"
             checked={value.hasHousingLoanCredit}
@@ -225,7 +225,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
             />
 
             {fromBalance > 0 ? (
-              <p className="text-xs text-ink-600">
+              <p className="field-hint">
                 年末残高 × {(rate * 100).toFixed(1)}% ＝{" "}
                 <span className="font-medium tabular-nums">{formatYen(fromBalance)}</span>
               </p>
@@ -272,8 +272,8 @@ function HousingLoanRateField({
   }
 
   return (
-    <label className="block space-y-1.5">
-      <span className="text-sm font-medium text-ink-800">控除率</span>
+    <label className="block space-y-2">
+      <span className="text-sm font-medium leading-7 text-ink-900">控除率</span>
       <select
         className="field-select"
         value={knownValue}
@@ -286,7 +286,7 @@ function HousingLoanRateField({
           </option>
         ))}
       </select>
-      <span className="block text-xs leading-6 text-ink-500">{hint}</span>
+      <span className="field-hint block">{hint}</span>
     </label>
   );
 }

@@ -38,7 +38,7 @@ export function IncomeStep({
     <section className="space-y-6">
       <header className="space-y-2">
         <h3 className="font-display text-2xl text-ink-950">収入の種類ごとに金額を書く</h3>
-        <p className="text-sm leading-7 text-ink-600">
+        <p className="section-copy">
           給与は源泉徴収票、事業や雑所得は確定申告の数字を、別々の欄に書いてください。空欄は0円として計算します。分かる欄だけ書いて、限度額の目安を出してください。
         </p>
       </header>
@@ -65,9 +65,9 @@ export function IncomeStep({
       </div>
 
       <div className="space-y-4">
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="font-display text-lg text-ink-950">給与所得（源泉徴収票）</h3>
-          <p className="text-sm leading-7 text-ink-600">
+          <p className="section-copy">
             会社・勤務先から受け取った源泉徴収票の「支払金額」です。個人事業の売上や雑所得は、下の確定申告の枠に書いてください。
           </p>
         </div>
@@ -94,9 +94,9 @@ export function IncomeStep({
       </div>
 
       <div className="card-gold space-y-4">
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="font-display text-lg text-cedar-950">事業所得</h3>
-          <p className="text-sm leading-7 text-cedar-900">
+          <p className="section-copy text-cedar-900">
             源泉徴収票の支払金額とは別枠です。個人事業・フリーランスなど、確定申告する事業の売上と経費がある人だけ書いてください。給与だけの人は空欄のままです。
           </p>
         </div>
@@ -118,9 +118,9 @@ export function IncomeStep({
             step={10000}
           />
         </div>
-        <label className="block space-y-1.5">
-          <span className="text-sm font-medium text-ink-800">青色申告特別控除</span>
-          <p className="text-xs leading-6 text-ink-500">事業所得がある人だけ。給与所得だけの人は未選択のままで構いません。</p>
+        <label className="block space-y-2">
+          <span className="text-sm font-medium leading-7 text-ink-900">青色申告特別控除</span>
+          <p className="field-hint">事業所得がある人だけ。給与所得だけの人は未選択のままで構いません。</p>
           <select
             className="field-select"
             value={value.blueSpecialDeduction === "" ? "" : String(value.blueSpecialDeduction)}
@@ -143,9 +143,9 @@ export function IncomeStep({
       </div>
 
       <div className="rounded-xl border border-ink-100 bg-white p-5 space-y-4">
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="font-display text-lg text-ink-950">その他の所得</h3>
-          <p className="text-sm leading-7 text-ink-600">
+          <p className="section-copy">
             源泉徴収票の給与とも、上の事業所得とも別です。原稿料・講演料・ネット販売など、確定申告する雑所得がある人だけ書いてください。
           </p>
         </div>

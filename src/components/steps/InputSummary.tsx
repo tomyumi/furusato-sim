@@ -26,7 +26,7 @@ const SPOUSE_LABEL = {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="kv-row" data-pdf-unit>
-      <div className="kv-label text-ink-600">{label}</div>
+      <div className="kv-label text-ink-700">{label}</div>
       <div className="kv-value font-medium text-ink-900">{value}</div>
     </div>
   );

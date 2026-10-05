@@ -31,9 +31,9 @@ function BreakdownTable({ lines }: { lines: BreakdownLine[] }) {
           data-pdf-unit
           className="border-b border-ink-100 py-3 last:border-b-0"
         >
-          <div className="text-sm leading-6 text-ink-800">{line.label}</div>
+          <div className="text-sm leading-7 text-ink-800">{line.label}</div>
           {line.note ? (
-            <div className="mt-0.5 text-xs leading-5 text-ink-500">{line.note}</div>
+            <div className="field-hint mt-1">{line.note}</div>
           ) : null}
           <div className="mt-1 text-right text-base font-semibold leading-7 tabular-nums text-ink-950">
             {line.unit === "percent" ? formatPercent(line.amount) : formatYen(line.amount)}
@@ -78,7 +78,7 @@ export function ResultStep({ result, form, history, resultAnchorId = "simulator-
     <section className="min-w-0 space-y-8">
       <header className="min-w-0 space-y-2">
         <h3 className="font-display text-2xl text-ink-950 sm:text-3xl">控除上限額のシミュレーション結果</h3>
-        <p className="text-sm leading-7 text-ink-600">
+        <p className="section-copy">
           自己負担2,000円を除き、ふるさと納税をいくらまで寄付できるかの限度額（目安）です。
         </p>
       </header>
@@ -114,27 +114,27 @@ export function ResultStep({ result, form, history, resultAnchorId = "simulator-
               <h3 className="text-sm font-semibold leading-6 text-ink-800">住宅ローン控除の振り分け</h3>
               <dl className="mt-1">
                 <div className="kv-row">
-                  <div className="kv-label text-ink-600">控除率</div>
+                  <div className="kv-label text-ink-700">控除率</div>
                   <div className="kv-value">{formatDeductionRatePercent(result.housingLoanRate)}</div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-label text-ink-600">控除可能額</div>
+                  <div className="kv-label text-ink-700">控除可能額</div>
                   <div className="kv-value">{formatYen(result.housingLoanPossibleAmount)}</div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-label text-ink-600">所得税から使い切り</div>
+                  <div className="kv-label text-ink-700">所得税から使い切り</div>
                   <div className="kv-value">{formatYen(result.housingLoanUsedOnIncomeTax)}</div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-label text-ink-600">所得税の残り（復興特別所得税込）</div>
+                  <div className="kv-label text-ink-700">所得税の残り（復興特別所得税込）</div>
                   <div className="kv-value">{formatYen(result.incomeTaxAfterCredits)}</div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-label text-ink-600">翌年の住民税へ振替</div>
+                  <div className="kv-label text-ink-700">翌年の住民税へ振替</div>
                   <div className="kv-value">{formatYen(result.housingLoanResidentTaxCredit)}</div>
                 </div>
                 <div className="kv-row">
-                  <div className="kv-label text-ink-600">上限超過で控除できない額</div>
+                  <div className="kv-label text-ink-700">上限超過で控除できない額</div>
                   <div className="kv-value">{formatYen(result.housingLoanUnusedCredit)}</div>
                 </div>
               </dl>
@@ -144,7 +144,7 @@ export function ResultStep({ result, form, history, resultAnchorId = "simulator-
           {result.notices.length > 0 ? (
             <div data-pdf-block className="card-muted">
               <h3 className="text-sm font-semibold leading-6 text-ink-800">計算上の補足</h3>
-              <ul className="mt-1 list-disc space-y-1 pl-5 text-sm leading-6 text-ink-700">
+              <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-8 text-ink-800">
                 {result.notices.map((n) => (
                   <li key={n} className="min-w-0 break-words">
                     {n}
@@ -199,7 +199,7 @@ export function ResultStep({ result, form, history, resultAnchorId = "simulator-
 
         <FilingAdvisor form={form} />
 
-        <p data-pdf-block className="min-w-0 text-xs leading-6 text-ink-500">
+        <p data-pdf-block className="field-hint min-w-0">
           本ツールは税制を簡易モデル化した目安計算です。最終判断は税務署または税理士等へご確認ください。
         </p>
       </article>

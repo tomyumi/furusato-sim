@@ -98,9 +98,9 @@ export function NumberField({
   }
 
   return (
-    <div className="block min-w-0 space-y-1.5">
+    <div className="block min-w-0 space-y-2">
       <label htmlFor={fieldId} className="flex min-w-0 flex-wrap items-center gap-2">
-        <span className="min-w-0 break-words text-sm font-medium leading-6 text-ink-800">
+        <span className="min-w-0 break-words text-sm font-medium leading-7 text-ink-900">
           {label}
         </span>
         {badge ? (
@@ -128,11 +128,11 @@ export function NumberField({
             commitRaw(el.value, digitCountBeforeCaret(el.value, caret));
           }}
         />
-        <span className="inline-flex shrink-0 items-center rounded-r-md border border-l-0 border-ink-200 bg-ink-50 px-3.5 text-sm leading-none text-ink-500">
+        <span className="inline-flex shrink-0 items-center rounded-r-md border border-l-0 border-ink-200 bg-ink-50 px-3.5 text-sm leading-none text-ink-700">
           {suffix}
         </span>
       </div>
-      {hint ? <p className="text-xs leading-6 text-ink-500">{hint}</p> : null}
+      {hint ? <p className="field-hint">{hint}</p> : null}
     </div>
   );
 }

@@ -32,7 +32,7 @@ export function HomeEditorial() {
               >
                 <p className="text-xs font-semibold tracking-[0.18em] text-cedar-700">{guide.category}</p>
                 <p className="mt-2 font-display text-xl leading-snug text-ink-950">{guide.title}</p>
-                <p className="mt-3 text-sm leading-7 text-ink-600">{guide.excerpt}</p>
+                <p className="mt-3 text-sm leading-8 text-ink-800">{guide.excerpt}</p>
               </a>
             </li>
           ))}
@@ -54,7 +54,7 @@ export function HomeEditorial() {
                 </span>
               </summary>
               <div className="faq-fold-panel">
-                <p className="text-sm leading-7 text-ink-700">{item.a}</p>
+                <p className="text-sm leading-8 text-ink-800">{item.a}</p>
               </div>
             </details>
           ))}
@@ -65,7 +65,7 @@ export function HomeEditorial() {
         <h2 id="about-heading" className="font-display text-xl text-ink-950">
           この限度額シミュレーションについて
         </h2>
-        <p className="mt-3 text-sm leading-8 text-ink-700">
+        <p className="mt-3 text-sm leading-8 text-ink-800">
           Furusato Lab は、副業・ダブルワーク、青色申告の事業所得、住宅ローン控除がある人向けに、ふるさと納税の控除上限額（限度額）の目安計算と解説を扱うメディアです。入力はブラウザ内で完結し、計算結果は概算です。株式の申告分離課税や損失の繰越など、複雑な事情がある方は対象外となる場合があります。最新の法令・各自治体の案内を優先してください。
         </p>
       </section>

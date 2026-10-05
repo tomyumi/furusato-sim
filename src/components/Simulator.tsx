@@ -173,7 +173,7 @@ export function Simulator() {
           <h2 id="limit-sim-heading" className="font-display text-2xl text-ink-950 sm:text-3xl">
             控除上限額・限度額を計算する
           </h2>
-          <p className="text-sm leading-7 text-ink-600">
+          <p className="section-copy">
             本業と副業の給与、青色申告の事業所得、住宅ローン控除の振替まで含めて、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
           </p>
         </div>
@@ -279,12 +279,12 @@ export function SimulatorPlaceholder() {
           <h2 id="limit-sim-heading" className="font-display text-2xl text-ink-950 sm:text-3xl" suppressHydrationWarning>
             控除上限額・限度額を計算する
           </h2>
-          <p className="text-sm leading-7 text-ink-600" suppressHydrationWarning>
+          <p className="section-copy" suppressHydrationWarning>
             本業と副業の給与、青色申告の事業所得、住宅ローン控除の振替まで含めて、源泉徴収票の金額から「ふるさと納税はいくらまで」寄付できるかをシミュレーションします。
           </p>
         </div>
         <div className="card min-h-[16rem] scroll-mt-24" suppressHydrationWarning>
-          <p className="text-sm leading-7 text-ink-500" suppressHydrationWarning>
+          <p className="section-copy" suppressHydrationWarning>
             読み込み中…
           </p>
         </div>

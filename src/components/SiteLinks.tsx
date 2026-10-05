@@ -52,7 +52,7 @@ export function SiteLinks({ keyword, amount, heading, appear = false }: SiteLink
                     </span>
                   </span>
                   <span className="mt-1 flex min-w-0 items-center gap-2">
-                    <span className="min-w-0 truncate text-xs font-medium leading-5 text-ink-500" title={site.query}>
+                    <span className="min-w-0 truncate text-xs font-medium leading-6 text-ink-700" title={site.query}>
                       {site.query}
                     </span>
                     <span className="shrink-0 whitespace-nowrap rounded-full border border-ink-200 bg-ink-50 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-ink-600">
