@@ -36,7 +36,7 @@ export function GuideLayout({ slug, title, lead, children }: Props) {
       <p className="field-hint mt-3 tracking-wide">
         最終更新：2026年10月　／　一般的な制度の解説（税務相談ではありません）
       </p>
-      <article className="card mt-10 space-y-8 text-[15px] leading-9 text-ink-800">{children}</article>
+      <article className="card mt-10 space-y-8 text-[15px] leading-9 text-ink-900">{children}</article>
       <aside className="card-gold mt-10 text-sm leading-8 text-cedar-950">
         ふるさと納税の控除上限額・限度額の計算は
         <a href="/#simulator" className="mx-1 font-semibold text-ink-950 no-underline hover:underline">

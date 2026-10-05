@@ -78,6 +78,42 @@ export default function RootLayout({
         <meta name="google-site-verification" content="N-noCgUJH5_9fg03bsMDHLfn3A5OerHBn3TeB9SaaMw" />
       </head>
       <body className="antialiased" suppressHydrationWarning>
+        {process.env.NODE_ENV === "development" ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){
+  function clean(el){
+    if (!el || el.nodeType !== 1) return;
+    if (el.hasAttribute && el.hasAttribute("data-cursor-ref")) el.removeAttribute("data-cursor-ref");
+    var nodes = el.querySelectorAll ? el.querySelectorAll("[data-cursor-ref]") : [];
+    for (var i = 0; i < nodes.length; i++) nodes[i].removeAttribute("data-cursor-ref");
+  }
+  clean(document.documentElement);
+  try {
+    var obs = new MutationObserver(function(records){
+      for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        if (r.type === "attributes" && r.target && r.target.removeAttribute) {
+          r.target.removeAttribute("data-cursor-ref");
+        }
+        var added = r.addedNodes;
+        for (var j = 0; j < added.length; j++) clean(added[j]);
+      }
+    });
+    obs.observe(document.documentElement, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["data-cursor-ref"]
+    });
+    window.addEventListener("load", function(){
+      setTimeout(function(){ obs.disconnect(); }, 0);
+    });
+  } catch (e) {}
+})();`,
+            }}
+          />
+        ) : null}
         <JsonLd
           data={{
             "@context": "https://schema.org",

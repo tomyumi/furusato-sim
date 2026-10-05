@@ -61,7 +61,7 @@ export function Accordion({
         onClick={() => setOpen((v) => !v)}
       >
         <span className="min-w-0">
-          <span className={`block min-w-0 break-words ${isForm ? "text-sm font-medium text-ink-800" : ""}`}>
+          <span className={`block min-w-0 break-words ${isForm ? "field-label" : ""}`}>
             {title}
           </span>
           {!shown && summary ? (

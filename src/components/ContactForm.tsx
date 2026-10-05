@@ -64,7 +64,7 @@ export function ContactForm() {
   return (
     <form onSubmit={onSubmit} className="card-muted space-y-5">
       <div>
-        <label htmlFor="contact-name" className="block text-sm font-medium leading-7 text-ink-900">
+        <label htmlFor="contact-name" className="field-label block">
           お名前（ニックネーム可）
         </label>
         <input
@@ -77,7 +77,7 @@ export function ContactForm() {
         />
       </div>
       <div>
-        <label htmlFor="contact-email" className="block text-sm font-medium leading-7 text-ink-900">
+        <label htmlFor="contact-email" className="field-label block">
           返信先メールアドレス（任意）
         </label>
         <input
@@ -91,7 +91,7 @@ export function ContactForm() {
         />
       </div>
       <div>
-        <label htmlFor="contact-message" className="block text-sm font-medium leading-7 text-ink-900">
+        <label htmlFor="contact-message" className="field-label block">
           お問い合わせ内容
         </label>
         <textarea

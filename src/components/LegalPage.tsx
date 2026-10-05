@@ -29,7 +29,7 @@ export function LegalPage({ title, lead, children }: Props) {
       </nav>
       <h1 className="mt-6 font-display text-3xl text-ink-950 sm:text-4xl">{title}</h1>
       {lead ? <p className="lede mt-4 max-w-2xl">{lead}</p> : null}
-      <article className="card mt-10 space-y-8 text-[15px] leading-9 text-ink-800">{children}</article>
+      <article className="card mt-10 space-y-8 text-[15px] leading-9 text-ink-900">{children}</article>
     </main>
   );
 }

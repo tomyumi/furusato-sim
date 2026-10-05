@@ -6,10 +6,10 @@ const NAV = [
 
 export function SiteNav() {
   return (
-    <nav aria-label="主要メニュー">
-      <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+    <nav aria-label="主要メニュー" suppressHydrationWarning>
+      <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium" suppressHydrationWarning>
         {NAV.map((item) => (
-          <li key={item.href}>
+          <li key={item.href} suppressHydrationWarning>
             <a href={item.href} className="text-ink-700 no-underline transition hover:text-cedar-700" suppressHydrationWarning>
               {item.label}
             </a>

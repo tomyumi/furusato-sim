@@ -119,7 +119,7 @@ export function IncomeStep({
           />
         </div>
         <label className="block space-y-2">
-          <span className="text-sm font-medium leading-7 text-ink-900">青色申告特別控除</span>
+          <span className="field-label">青色申告特別控除</span>
           <p className="field-hint">事業所得がある人だけ。給与所得だけの人は未選択のままで構いません。</p>
           <select
             className="field-select"

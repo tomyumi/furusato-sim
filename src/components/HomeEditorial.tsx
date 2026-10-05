@@ -3,11 +3,17 @@ import { GUIDES, HOME_FAQS } from "@/lib/guides";
 export function HomeEditorial() {
   return (
     <div className="mt-16 space-y-16 sm:mt-20">
-      <section aria-labelledby="guides-heading">
+      <section aria-labelledby="guides-heading" suppressHydrationWarning>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="kicker">COLUMN</p>
-            <h2 id="guides-heading" className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl">
+            <p className="kicker" suppressHydrationWarning>
+              COLUMN
+            </p>
+            <h2
+              id="guides-heading"
+              className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl"
+              suppressHydrationWarning
+            >
               ふるさと納税はいくらまで？解説コラム
             </h2>
           </div>
@@ -19,53 +25,63 @@ export function HomeEditorial() {
             限度額の解説一覧
           </a>
         </div>
-        <p className="lede mt-3 max-w-2xl">
+        <p className="lede mt-3 max-w-2xl" suppressHydrationWarning>
           副業・個人事業主・住宅ローン控除がある人の限度額の考え方、申告の選び方、返礼品、年末の期限までまとめています。
         </p>
-        <ul className="mt-8 grid gap-5">
+        <ul className="mt-8 grid gap-5" suppressHydrationWarning>
           {GUIDES.map((guide) => (
-            <li key={guide.slug}>
+            <li key={guide.slug} suppressHydrationWarning>
               <a
                 href={guide.href}
                 className="card block p-6 no-underline transition duration-200 hover:-translate-y-0.5 hover:border-cedar-200 sm:p-7"
                 suppressHydrationWarning
               >
-                <p className="text-xs font-semibold tracking-[0.18em] text-cedar-700">{guide.category}</p>
-                <p className="mt-2 font-display text-xl leading-snug text-ink-950">{guide.title}</p>
-                <p className="mt-3 text-sm leading-8 text-ink-800">{guide.excerpt}</p>
+                <p className="text-xs font-semibold tracking-[0.18em] text-cedar-700" suppressHydrationWarning>
+                  {guide.category}
+                </p>
+                <p className="mt-2 font-display text-xl leading-snug text-ink-950" suppressHydrationWarning>
+                  {guide.title}
+                </p>
+                <p className="section-copy mt-3" suppressHydrationWarning>
+                  {guide.excerpt}
+                </p>
               </a>
             </li>
           ))}
         </ul>
       </section>
 
-      <section aria-labelledby="faq-heading">
-        <p className="kicker">Q&amp;A</p>
-        <h2 id="faq-heading" className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl">
+      <section aria-labelledby="faq-heading" suppressHydrationWarning>
+        <p className="kicker" suppressHydrationWarning>
+          Q&amp;A
+        </p>
+        <h2 id="faq-heading" className="mt-2 font-display text-2xl text-ink-950 sm:text-3xl" suppressHydrationWarning>
           限度額・控除上限額のよくある質問
         </h2>
         <div className="mt-8 space-y-3">
           {HOME_FAQS.map((item) => (
-            <details key={item.q} className="faq-fold">
-              <summary className="faq-fold-summary">
+            <details key={item.q} className="faq-fold" suppressHydrationWarning>
+              <summary className="faq-fold-summary" suppressHydrationWarning>
                 <span className="min-w-0">{item.q}</span>
                 <span className="faq-fold-mark" aria-hidden>
                   ▾
                 </span>
               </summary>
               <div className="faq-fold-panel">
-                <p className="text-sm leading-8 text-ink-800">{item.a}</p>
+                <p className="section-copy" suppressHydrationWarning>
+                  {item.a}
+                </p>
               </div>
             </details>
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="about-heading" className="card-muted">
-        <h2 id="about-heading" className="font-display text-xl text-ink-950">
+      <section aria-labelledby="about-heading" className="card-muted" suppressHydrationWarning>
+        <h2 id="about-heading" className="font-display text-xl text-ink-950" suppressHydrationWarning>
           この限度額シミュレーションについて
         </h2>
-        <p className="mt-3 text-sm leading-8 text-ink-800">
+        <p className="section-copy mt-3" suppressHydrationWarning>
           Furusato Lab は、副業・ダブルワーク、青色申告の事業所得、住宅ローン控除がある人向けに、ふるさと納税の控除上限額（限度額）の目安計算と解説を扱うメディアです。入力はブラウザ内で完結し、計算結果は概算です。株式の申告分離課税や損失の繰越など、複雑な事情がある方は対象外となる場合があります。最新の法令・各自治体の案内を優先してください。
         </p>
       </section>

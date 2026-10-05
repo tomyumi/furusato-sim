@@ -81,7 +81,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
       </header>
 
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium leading-7 text-ink-900">控除対象配偶者</legend>
+        <legend className="field-label">控除対象配偶者</legend>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {SPOUSE_OPTIONS.map((option) => (
             <div
@@ -173,7 +173,7 @@ export function FamilyStep({ value, onChange }: FamilyStepProps) {
       </Accordion>
 
       <div className="card-muted space-y-4">
-        <label className="flex items-start gap-3 text-sm font-medium leading-7 text-ink-900">
+        <label className="flex items-start gap-3 field-label">
           <input
             type="checkbox"
             checked={value.hasHousingLoanCredit}
@@ -273,7 +273,7 @@ function HousingLoanRateField({
 
   return (
     <label className="block space-y-2">
-      <span className="text-sm font-medium leading-7 text-ink-900">控除率</span>
+      <span className="field-label">控除率</span>
       <select
         className="field-select"
         value={knownValue}

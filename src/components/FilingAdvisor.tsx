@@ -53,7 +53,7 @@ function ChoiceRow({
 }) {
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-medium leading-7 text-ink-900">{question}</legend>
+      <legend className="field-label">{question}</legend>
       <p className="field-hint">{hint}</p>
       <div className="flex flex-col gap-2 sm:flex-row">
         {QUESTION_OPTIONS.map((option) => {

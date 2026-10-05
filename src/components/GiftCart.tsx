@@ -450,7 +450,7 @@ export function GiftCart({ limit }: GiftCartProps) {
         </p>
       </div>
 
-      {createPortal(compactBarNode, document.body)}
+      {typeof document !== "undefined" ? createPortal(compactBarNode, document.body) : null}
 
       <p className="section-copy text-center">
         💡 お好みの条件を選ぶと、各ポータルサイトの検索ページに連動します

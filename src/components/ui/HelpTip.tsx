@@ -107,7 +107,7 @@ export function HelpTip({ label, children }: HelpTipProps) {
               ref={panelRef}
               id={tipId}
               role="tooltip"
-              className="fixed z-[80] w-72 max-w-[calc(100vw-1.5rem)] rounded-md border border-ink-200 bg-white px-3.5 py-3 text-left text-xs leading-7 text-ink-800 shadow-lg"
+              className="fixed z-[80] w-72 max-w-[calc(100vw-1.5rem)] rounded-md border border-ink-200 bg-white px-3.5 py-3 text-left text-[13px] leading-7 text-ink-800 shadow-lg"
               style={{
                 top: coords.placeAbove ? undefined : coords.top,
                 bottom: coords.placeAbove ? coords.viewportHeight - coords.top : undefined,

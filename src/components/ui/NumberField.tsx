@@ -98,9 +98,9 @@ export function NumberField({
   }
 
   return (
-    <div className="block min-w-0 space-y-2">
+    <div className="block min-w-0 space-y-2.5">
       <label htmlFor={fieldId} className="flex min-w-0 flex-wrap items-center gap-2">
-        <span className="min-w-0 break-words text-sm font-medium leading-7 text-ink-900">
+        <span className="field-label min-w-0 break-words">
           {label}
         </span>
         {badge ? (
@@ -120,6 +120,7 @@ export function NumberField({
           spellCheck={false}
           placeholder="未入力"
           className={`${INPUT_CLASS} tabular-nums`}
+          suppressHydrationWarning
           value={display}
           onKeyDown={handleKeyDown}
           onChange={(e) => {

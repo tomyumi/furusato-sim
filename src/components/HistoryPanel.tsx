@@ -40,7 +40,7 @@ export function HistoryPanel({
           <p className="section-copy mt-1">
             結果を開くと自動で保存されます。最大3件まで残り、選んで今回の結果と比較できます。
           </p>
-          <p className="section-copy mt-1">
+          <p className="field-hint mt-2">
             ※プライバシー保護のため、入力データおよび履歴はサーバーに送信されず、すべてお客様のブラウザ内で完結します。
           </p>
         </div>
